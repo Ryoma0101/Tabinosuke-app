@@ -1,4 +1,5 @@
 import React from "react";
+import { Input } from "../components/Atoms/Input/input";
 import Header from "@/components/Atoms/Header";
 import { Button } from "@/components/ui/button";
 import TransportSelector from "@/components/Molecules/TransportSelector";
@@ -21,6 +22,8 @@ export default function Home() {
           </div>
         </main>
         <Day day={1} date={new Date(2025, 1, 25)} />
+       <div className="grid flex justify-center align-center">
+      <Input type="text" placeholder="旅行プラン名" />
         <main></main>
       </div>
     </div>
