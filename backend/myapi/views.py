@@ -1,4 +1,5 @@
 import os
+import json
 from dotenv import load_dotenv
 import requests
 from rest_framework.views import APIView
@@ -44,16 +45,22 @@ class PlaceNameView(APIView):
             try:
                 # PlacesAPIへリクエスト送信
                 response = requests.post(places_api_url, headers=headers, json=query)
-                response_data = response.json()
-                return Response(response_data, status=response.status_code)
+                place_data = {}
+                for index, place in enumerate(places_list, start=1):
+                    place_name = place["displayName"]["text"]  # 場所の名前
+                    place_address = place.get("formattedAddress", "No address available")  # 住所（無い場合はデフォルト値）
+
+                    place_data[index] = {"name": place_name, "address": place_address}
+
+                return Response(place_data, status=response.status_code)
 
             except requests.exceptions.RequestException as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    
     def get(self, request, *args, **kwargs):
-        # クエリパラメータから place_name を取得
         place_name = request.GET.get("place_name")
 
         if not place_name:
@@ -68,19 +75,33 @@ class PlaceNameView(APIView):
         headers = {
             "Content-Type": "application/json",
             "X-Goog-Api-Key": google_api_key,
-            "X-Goog-FieldMask": "places.displayName,places.location"
+            "X-Goog-FieldMask": "places.displayName,places.formattedAddress"
         }
-        
+
         query = {
-                "textQuery": place_name,
-                "pageSize": 5
-            }
+            "textQuery": place_name,
+            "pageSize": 5
+        }
 
         try:
             # Places APIへリクエスト送信
             response = requests.post(places_api_url, headers=headers, json=query)
             response_data = response.json()
-            return Response(response_data, status=response.status_code)
+
+            # レスポンスに "places" キーがあるかチェック
+            if "places" not in response_data:
+                return Response({"error": "No places found"}, status=status.HTTP_404_NOT_FOUND)
+
+            places_list = response_data["places"]
+            
+            place_data = {}
+            for index, place in enumerate(places_list, start=1):
+                place_name = place["displayName"]["text"]  # 場所の名前
+                place_address = place.get("formattedAddress", "No address available")  # 住所（無い場合はデフォルト値）
+
+                place_data[index] = {"name": place_name, "address": place_address}
+
+            return Response(place_data, status=response.status_code)
 
         except requests.exceptions.RequestException as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -94,12 +115,14 @@ class TwoPlaceDistanceView(APIView):
             PlaceLngFrom = serializer.validated_data['place_lng_from']
             PlaceLatInto = serializer.validated_data['place_lat_into']
             PlaceLngInto = serializer.validated_data['place_lng_into']
-        data = {"PlaceLatFrom": PlaceLatFrom,
-                "PlaceLngFrom": PlaceLngFrom,
-                "PlaceLatInto": PlaceLatInto,
-                "PlaceLngInto": PlaceLngInto}
+            data = {"PlaceLatFrom": PlaceLatFrom,
+                    "PlaceLngFrom": PlaceLngFrom,
+                    "PlaceLatInto": PlaceLatInto,
+                    "PlaceLngInto": PlaceLngInto}
         
-        return Response(data, status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, *args, **kwargs):
         PlaceLatFrom = request.GET.get("place_lat_from")
