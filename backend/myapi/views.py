@@ -14,15 +14,12 @@ class PlaceNameView(APIView):
         serializer = PlaceNameSerializer(data=request.data)
         if serializer.is_valid():
             PlaceName = serializer.validated_data['place_name']
-            PlaceBias = serializer.validated_data['place_bias']
-            
-            if not place_name:
+            PlaceBias = serializer.validated_data.get('place_bias', None)
+
+            if not PlaceName:
                 return Response({"error": "place_name is required"}, status=status.HTTP_400_BAD_REQUEST)
             
-            if not place_bias:
-                BiasUse = False
-            else:
-                BiasUse = True
+            BiasUse = bool(PlaceBias)
             
             # Places APIのURL
             places_api_url = "https://places.googleapis.com/v1/places:searchText"
@@ -36,17 +33,13 @@ class PlaceNameView(APIView):
                 "X-Goog-FieldMask": "places.displayName,places.location"
             }
             
+            query = {
+                "textQuery": PlaceName,
+                "pageSize": 5
+            }
+
             if BiasUse:
-                query = {
-                "textQuery": PlaceName,
-                "locationBias": PlaceBias,
-                "pageSize": 5
-                }
-            else:
-                query = {
-                "textQuery": PlaceName,
-                "pageSize": 5
-                }
+                query["locationBias"] = PlaceBias
                 
             try:
                 # PlacesAPIへリクエスト送信
