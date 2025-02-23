@@ -36,7 +36,7 @@ class PlaceNameView(APIView):
                 "X-Goog-FieldMask": "places.displayName,places.location"
             }
             
-            if Bias:
+            if BiasUse:
                 query = {
                 "textQuery": PlaceName,
                 "locationBias": PlaceBias,
@@ -60,64 +60,63 @@ class PlaceNameView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request, *args, **kwargs):
-        serializer = PlaceNameSerializer(data=request.data)
-        if serializer.is_valid():
-            PlaceName = serializer.validated_data['place_name']
-            PlaceBias = serializer.validated_data['place_bias']
-            
-            if not place_name:
-                return Response({"error": "place_name is required"}, status=status.HTTP_400_BAD_REQUEST)
-            
-            if not place_bias:
-                BiasUse = False
-            else:
-                BiasUse = True
-            
-            # Places APIのURL
-            places_api_url = "https://places.googleapis.com/v1/places:searchText"
-            
-            # Google API Key
-            google_api_key = os.getenv('google_api_key')
-            
-            headers = {
-                "Content-Type": "application/json",
-                "X-Goog-Api-Key": google_api_key,
-                "X-Goog-FieldMask": "places.displayName,places.location"
+        # クエリパラメータから place_name を取得
+        place_name = request.GET.get("place_name")
+
+        if not place_name:
+            return Response({"error": "place_name is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Places APIのURL
+        places_api_url = "https://places.googleapis.com/v1/places:searchText"
+
+        # Google API Key
+        google_api_key = os.getenv("google_api_key")
+
+        headers = {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": google_api_key,
+            "X-Goog-FieldMask": "places.displayName,places.location"
+        }
+        
+        query = {
+                "textQuery": place_name,
+                "pageSize": 5
             }
-            
-            if BiasUse:
-                query = {
-                "textQuery": PlaceName,
-                "locationBias": PlaceBias,
-                "pageSize": 5
-                }
-            else:
-                query = {
-                "textQuery": PlaceName,
-                "pageSize": 5
-                }
-                
-            try:
-                # PlacesAPIへリクエスト送信
-                response = requests.post(places_api_url, headers=headers, json=query)
-                response_data = response.json()
-                return Response(response_data, status=response.status_code)
 
-            except requests.exceptions.RequestException as e:
-                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            # Places APIへリクエスト送信
+            response = requests.post(places_api_url, headers=headers, json=query)
+            response_data = response.json()
+            return Response(response_data, status=response.status_code)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except requests.exceptions.RequestException as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class TwoPlaceDistanceView(APIView):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = TwoPlaceDistanceSerializer(data=request.data)
         if serializer.is_valid():
             PlaceLatFrom = serializer.validated_data['place_lat_from']
             PlaceLngFrom = serializer.validated_data['place_lng_from']
             PlaceLatInto = serializer.validated_data['place_lat_into']
             PlaceLngInto = serializer.validated_data['place_lng_into']
-        return {"PlaceLatFrom": PlaceLatFrom,
+        data = {"PlaceLatFrom": PlaceLatFrom,
                 "PlaceLngFrom": PlaceLngFrom,
                 "PlaceLatInto": PlaceLatInto,
                 "PlaceLngInto": PlaceLngInto}
+        
+        return Response(data, status=status.HTTP_200_OK)
+
+    def get(self, request, *args, **kwargs):
+        PlaceLatFrom = request.GET.get("place_lat_from")
+        PlaceLngFrom = request.GET.get("place_lng_from")
+        PlaceLatInto = request.GET.get("place_lat_into")
+        PlaceLngInto = request.GET.get("place_lng_into")
+    
+        data = {"PlaceLatFrom": PlaceLatFrom,
+                "PlaceLngFrom": PlaceLngFrom,
+                "PlaceLatInto": PlaceLatInto,
+                "PlaceLngInto": PlaceLngInto}
+        
+        return Response(data, status=status.HTTP_200_OK)
