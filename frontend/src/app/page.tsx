@@ -1,6 +1,7 @@
 import React from "react";
 import Header from "@/components/Atoms/Header";
 import { Button } from "@/components/ui/button";
+import TransportSelector from "@/components/Molecules/TransportSelector";
 
 export default function Home() {
   return (
@@ -13,6 +14,9 @@ export default function Home() {
               修正する
             </Button>
             <Button className="w-[136px] bg-[#3f3f46]">作成する</Button>
+          </div>
+          <div className="p-6">
+            <TransportSelector />
           </div>
         </main>
       </div>
