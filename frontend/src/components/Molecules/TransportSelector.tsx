@@ -18,7 +18,7 @@ export default function TransportSelector() {
     <div className="flex items-stretch font-sans h-auto">
       <div className="w-1 bg-gray-700"></div>
       <div className="ml-6 flex flex-col p-4">
-        <h2 className="text-lg font-semibold mb-4">移動手段の選択</h2>
+        <h2 className="text-base mb-4">移動手段の選択</h2>
         <div className="flex space-x-2">
           {transportModes.map((mode) => (
             <button
