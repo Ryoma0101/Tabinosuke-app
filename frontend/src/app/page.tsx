@@ -2,6 +2,7 @@ import React from "react";
 import Header from "@/components/Atoms/Header";
 import { Button } from "@/components/ui/button";
 import TransportSelector from "@/components/Molecules/TransportSelector";
+import Day from "@/components/Atoms/Day";
 
 export default function Home() {
   return (
@@ -19,6 +20,8 @@ export default function Home() {
             <TransportSelector />
           </div>
         </main>
+        <Day day={1} date={new Date(2025, 1, 25)} />
+        <main></main>
       </div>
     </div>
   );
