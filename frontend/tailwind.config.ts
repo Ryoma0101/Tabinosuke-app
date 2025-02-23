@@ -1,13 +1,16 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config = {
+  // ダークモードはクラスベースで管理
   darkMode: ["class"],
+  // Tailwind が適用される対象ファイル
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+    "*.{js,ts,jsx,tsx,mdx}", // 追加
+  ],
   prefix: "",
   theme: {
     container: {
@@ -18,6 +21,11 @@ const config = {
       },
     },
     extend: {
+      // グローバルなフォントファミリーの設定（Noto Sans JP を使用）
+      fontFamily: {
+        sans: ['"Noto Sans JP"', "sans-serif"],
+      },
+      // カスタムカラーの設定（指定のカラーコードを適用）
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -25,20 +33,20 @@ const config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#16a34a", // 指定されたカラーコード
+          foreground: "#ffffff",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#3f3f46", // 指定されたカラーコード
+          foreground: "#ffffff",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "#b91c1c", // 指定されたカラーコード
+          foreground: "#ffffff",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "#a1a1aa", // 指定されたカラーコード
+          foreground: "#666666",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
@@ -53,11 +61,13 @@ const config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      // カスタムのボーダー半径設定
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      // アコーディオン用のキーフレームアニメーション
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
@@ -68,13 +78,15 @@ const config = {
           to: { height: "0" },
         },
       },
+      // キーフレームを利用したアニメーションの定義
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },
+  // tailwindcss-animate プラグインの追加
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default config;
