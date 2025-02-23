@@ -25,10 +25,16 @@ export default function TransportSelector() {
               key={mode.id}
               onClick={() => setSelected(mode.id)}
               className={`relative p-3 rounded-full transition ${
-                selected === mode.id ? "bg-green-200" : "hover:bg-green-100"
+                selected === mode.id ? "bg-[#16A34A]" : "hover:bg-green-100"
               }`}
             >
-              <Image src={mode.src} alt={mode.label} width={32} height={32} />
+              <Image
+                src={mode.src}
+                alt={mode.label}
+                width={32}
+                height={32}
+                className={selected === mode.id ? "brightness-0 invert" : ""}
+              />
             </button>
           ))}
         </div>
