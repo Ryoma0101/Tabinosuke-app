@@ -47,8 +47,8 @@ class PlaceNameView(APIView):
                 response = requests.post(places_api_url, headers=headers, json=query)
                 place_data = {}
                 for index, place in enumerate(places_list, start=1):
-                    place_name = place["displayName"]["text"]  # 場所の名前
-                    place_address = place.get("formattedAddress", "No address available")  # 住所（無い場合はデフォルト値）
+                    place_name = place["displayName"]["text"]
+                    place_address = place.get("formattedAddress", "No address available")
 
                     place_data[index] = {"name": place_name, "address": place_address}
 
@@ -96,8 +96,8 @@ class PlaceNameView(APIView):
             
             place_data = {}
             for index, place in enumerate(places_list, start=1):
-                place_name = place["displayName"]["text"]  # 場所の名前
-                place_address = place.get("formattedAddress", "No address available")  # 住所（無い場合はデフォルト値）
+                place_name = place["displayName"]["text"]
+                place_address = place.get("formattedAddress", "No address available")
 
                 place_data[index] = {"name": place_name, "address": place_address}
 
@@ -111,28 +111,60 @@ class TwoPlaceDistanceView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = TwoPlaceDistanceSerializer(data=request.data)
         if serializer.is_valid():
-            PlaceLatFrom = serializer.validated_data['place_lat_from']
-            PlaceLngFrom = serializer.validated_data['place_lng_from']
-            PlaceLatInto = serializer.validated_data['place_lat_into']
-            PlaceLngInto = serializer.validated_data['place_lng_into']
-            data = {"PlaceLatFrom": PlaceLatFrom,
-                    "PlaceLngFrom": PlaceLngFrom,
-                    "PlaceLatInto": PlaceLatInto,
-                    "PlaceLngInto": PlaceLngInto}
-        
-            return Response(data, status=status.HTTP_200_OK)
+            place_from = serializer.validated_data['place_from']
+            place_to = serializer.validated_data['place_to']
+            mode = serializer.validated_data.get('mode', 'driving')  # デフォルトは車移動
+
+            distance_data = self.get_distance(place_from, place_to, mode)
+            if 'error' in distance_data:
+                return Response(distance_data, status=status.HTTP_400_BAD_REQUEST)
+            
+            return Response(distance_data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, *args, **kwargs):
-        PlaceLatFrom = request.GET.get("place_lat_from")
-        PlaceLngFrom = request.GET.get("place_lng_from")
-        PlaceLatInto = request.GET.get("place_lat_into")
-        PlaceLngInto = request.GET.get("place_lng_into")
-    
-        data = {"PlaceLatFrom": PlaceLatFrom,
-                "PlaceLngFrom": PlaceLngFrom,
-                "PlaceLatInto": PlaceLatInto,
-                "PlaceLngInto": PlaceLngInto}
+        place_from = request.GET.get("place_from")
+        place_to = request.GET.get("place_to")
+        mode = request.GET.get("mode", "driving")
+
+        if not place_from or not place_to:
+            return Response({"error": "Both place_from and place_to are required"}, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response(data, status=status.HTTP_200_OK)
+        distance_data = self.get_distance(place_from, place_to, mode)
+        if 'error' in distance_data:
+            return Response(distance_data, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(distance_data, status=status.HTTP_200_OK)
+    
+    def get_distance(self, origin, destination, mode):
+        google_api_key = os.getenv("google_api_key")
+        distance_matrix_url = "https://maps.googleapis.com/maps/api/distancematrix/json"
+
+        params = {
+            "origins": origin,
+            "destinations": destination,
+            "mode": mode,
+            "key": google_api_key
+        }
+
+        try:
+            response = requests.get(distance_matrix_url, params=params)
+            data = response.json()
+
+            if data.get("status") != "OK":
+                return {"error": "Failed to fetch distance data", "details": data}
+            
+            elements = data["rows"][0]["elements"][0]
+            if elements.get("status") != "OK":
+                return {"error": "Invalid locations", "details": elements}
+            
+            return {
+                "origin": origin,
+                "destination": destination,
+                "mode": mode,
+                "distance": elements["distance"]["text"],
+                "duration": elements["duration"]["text"],
+            }
+        except requests.exceptions.RequestException as e:
+            return {"error": str(e)}

@@ -7,7 +7,6 @@ class PlaceNameSerializer(serializers.Serializer):
 
 
 class TwoPlaceDistanceSerializer(serializers.Serializer):
-    place_lat_from = serializers.FloatField()
-    place_lng_from = serializers.FloatField()
-    place_lat_into = serializers.FloatField()
-    place_lng_into = serializers.FloatField()
+    place_from = serializers.CharField()
+    place_to = serializers.CharField()
+    mode = serializers.CharField()
