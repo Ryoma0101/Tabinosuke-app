@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface ScheduleProps {
   time: string;
@@ -26,7 +27,13 @@ export default function Schedule({
       <div className="flex flex-col items-start w-56 gap-3">
         {/* アイコン＋経由地（JSONから取得） */}
         <div className="flex justify-start mb-4 text-base">
-          <img src="/icons/pin.svg" className="mr-1" alt="Pin Icon" />
+          <Image
+            src="/icons/pin.svg"
+            alt="Pin Icon"
+            width={16}
+            height={16}
+            className="mr-1"
+          />
           <span>{route}</span>
         </div>
 
