@@ -6,6 +6,7 @@ import TransportSelector from "@/components/Molecules/TransportSelector";
 import Day from "@/components/Atoms/Day";
 import Schedule from "@/components/Atoms/Schedule";
 import DepartureCard from "@/components/Molecules/DepartureCard";
+import DestinationCard from "@/components/Molecules/DestinationCard";
 const jsonData = {
   time: "AM 5:00",
   priority: "高", // "低" または "中" も指定可能
@@ -29,6 +30,11 @@ export default function Home() {
           </div>
           <div className="p-6 gap-6 flex flex-col">
             <DepartureCard
+              title="出発地点"
+              time="到着時間目安"
+              location="場所"
+            />
+            <DestinationCard
               title="出発地点"
               time="到着時間目安"
               location="場所"
