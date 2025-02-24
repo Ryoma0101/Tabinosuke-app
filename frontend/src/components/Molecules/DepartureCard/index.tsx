@@ -16,6 +16,7 @@ const DepartureCard: React.FC = () => {
           出発地点
         </h2>
       </div>
+
       <div className="mb-[16px]">
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           場所
