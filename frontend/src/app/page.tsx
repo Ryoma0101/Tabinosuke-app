@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import TransportSelector from "@/components/Molecules/TransportSelector";
 import Day from "@/components/Atoms/Day";
 import Schedule from "@/components/Atoms/Schedule";
+import Alert from "@/components/Molecules/Alert";
 
 const jsonData = {
   time: "AM 5:00",
+  endTime: "PM 6:00",
   priority: "高", // "低" または "中" も指定可能
   route: "高須クリニック",
 };
@@ -52,6 +54,7 @@ export default function Home() {
               showPriority={false}
             />
           </div>
+          <Alert />
         </main>
         <Day day={1} date={new Date(2025, 1, 25)} />
         <div className="grid flex justify-center align-center">
