@@ -4,17 +4,7 @@ import { PlaceInput } from "@/components/ui/placeinput";
 import { DatePickerDemo } from "@/components/ui/DatePicker";
 import { Clock4 } from "lucide-react";
 
-interface DepartureCardProps {
-  title: string;
-  time: string;
-  location: string;
-}
-
-const DepartureCard: React.FC<DepartureCardProps> = ({
-  title,
-  time,
-  location,
-}) => {
+const DepartureCard: React.FC = ({}) => {
   const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
     event.currentTarget.showPicker();
   };
@@ -23,18 +13,18 @@ const DepartureCard: React.FC<DepartureCardProps> = ({
     <ul className="departure-card">
       <div className="mb-[16px]">
         <h2 className="text-[var(--text-border-default,#3F3F46)] font-noto text-[20px] font-normal leading-normal">
-          {title}
+          出発地点
         </h2>
       </div>
       <div className="mb-[16px]">
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
-          {location}
+          場所
         </p>
         <PlaceInput />
       </div>
       <div>
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
-          {time}
+          到着予定時刻
         </p>
         <div className="flex space-x-[16px]">
           <DatePickerDemo />
