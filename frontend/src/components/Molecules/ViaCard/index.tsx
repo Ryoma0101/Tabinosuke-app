@@ -11,13 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface ViaCardProps {
-  title: string;
-  time: string;
-  location: string;
-}
-
-const ViaCard: React.FC<ViaCardProps> = ({ title, time, location }) => {
+const ViaCard: React.FC = () => {
   const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
     event.currentTarget.showPicker();
   };
@@ -47,7 +41,7 @@ const ViaCard: React.FC<ViaCardProps> = ({ title, time, location }) => {
       </div>
       <div className="mb-[16px] items-center">
         <p className="text-[#3F3F46] font-noto text-[16px] font-normal leading-normal mb-[12px]">
-          {location}
+          場所
         </p>
         <PlaceInput />
       </div>

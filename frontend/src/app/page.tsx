@@ -36,7 +36,7 @@ export default function Home() {
             />
           </div>
           <div className="p-6 gap-6 flex flex-col">
-            <ViaCard title="出発地点" time="到着時間目安" location="場所" />
+            <ViaCard />
           </div>
           <div className="p-6 gap-6 flex flex-col">
             <Schedule
