@@ -24,7 +24,7 @@ const DestinationCard: React.FC = () => {
       </div>
       <div>
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
-          出発時間目安
+          到着時間目安
         </p>
         <div className="flex space-x-[16px]">
           <DatePickerDemo />
