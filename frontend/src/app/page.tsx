@@ -29,16 +29,8 @@ export default function Home() {
             <TransportSelector />
           </div>
           <div className="p-6 gap-6 flex flex-col">
-            <DepartureCard
-              title="出発地点"
-              time="到着時間目安"
-              location="場所"
-            />
-            <DestinationCard
-              title="出発地点"
-              time="到着時間目安"
-              location="場所"
-            />
+            <DepartureCard />
+            <DestinationCard />
           </div>
           <div className="p-6 gap-6 flex flex-col">
             <Schedule

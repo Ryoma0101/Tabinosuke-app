@@ -4,17 +4,7 @@ import { PlaceInput } from "@/components/ui/placeinput";
 import { DatePickerDemo } from "@/components/ui/DatePicker";
 import { Clock4 } from "lucide-react";
 
-interface DestinationCardProps {
-  title: string;
-  time: string;
-  location: string;
-}
-
-const DestinationCard: React.FC<DestinationCardProps> = ({
-  title,
-  time,
-  location,
-}) => {
+const DestinationCard: React.FC = () => {
   const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
     event.currentTarget.showPicker();
   };
