@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+
 export function DatePickerDemo() {
   const [date, setDate] = useState<Date | undefined>();
 
@@ -20,12 +21,12 @@ export function DatePickerDemo() {
         <Button
           variant={"outline"}
           className={cn(
-            "w-[144px] justify-start text-left font-normal",
+            "relative w-[144px] justify-center text-left font-normal",
             !date && "text-muted-foreground"
           )}
         >
-          <CalendarDays className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>Pick a date</span>}
+          <CalendarDays className="absolute left-[7px] h-4 w-4" />
+          {date ? format(date, "yyyy/MM/dd") : <span></span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
