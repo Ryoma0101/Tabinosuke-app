@@ -26,7 +26,7 @@ export default function Schedule({
   }[priority];
 
   return (
-    <div className="flex justify-between items-center w-[330px] font-sans gap-6 p-0 m-0">
+    <div className="flex justify-between items-center w-[330px] font-sans gap-[39px] p-0 m-0">
       <div className="flex flex-col items-center text-[13px] text-[#666666] font-normal leading-normal w-24 pl-2 whitespace-nowrap">
         <div>{time}</div>
         {endTime && (
@@ -37,8 +37,8 @@ export default function Schedule({
         )}
       </div>
 
-      <div className="flex flex-col items-start w-56 gap-3 ml-4">
-        <div className="flex items-start mb-4 text-base">
+      <div className="flex flex-col flex-1 gap-3">
+        <div className="flex items-start text-base">
           <Image
             src="/icons/pin.svg"
             alt="Pin Icon"
