@@ -3,6 +3,7 @@ import Image from "next/image";
 
 interface ScheduleProps {
   time: string;
+  endTime?: string;
   priority: "低" | "中" | "高";
   route: string;
   showCurrent?: boolean;
@@ -11,43 +12,54 @@ interface ScheduleProps {
 
 export default function Schedule({
   time,
+  endTime,
   priority,
   route,
   showCurrent = true,
   showPriority = true,
 }: ScheduleProps) {
+  // 優先度に応じたテキストカラーを設定
+  const priorityColor = {
+    低: "text-green-500",
+    中: "text-orange-500",
+    高: "text-red-500",
+  }[priority];
+
   return (
-    <div className="flex justify-between items-start w-[330px] font-sans gap-6 p-0 m-0">
-      {/* 左上の時間（JSONから取得） */}
-      <div className="text-[13px] text-[#666666] font-sans font-normal leading-normal w-16">
-        {time}
+    <div className="flex justify-between items-center w-[330px] font-sans gap-6 p-0 m-0">
+      <div className="flex flex-col items-center text-[13px] text-[#666666] font-normal leading-normal w-24 pl-2 whitespace-nowrap">
+        <div>{time}</div>
+        {endTime && (
+          <>
+            <span className="inline-block transform rotate-90">~</span>
+            <div>{endTime}</div>
+          </>
+        )}
       </div>
 
-      {/* 右側パネル */}
-      <div className="flex flex-col items-start w-56 gap-3">
-        {/* アイコン＋経由地（JSONから取得） */}
-        <div className="flex justify-start mb-4 text-base">
+      <div className="flex flex-col items-start w-56 gap-3 ml-4">
+        <div className="flex items-start mb-4 text-base">
           <Image
             src="/icons/pin.svg"
             alt="Pin Icon"
             width={16}
             height={16}
-            className="mr-1"
+            className="mr-1 flex-shrink-0"
           />
-          <span>{route}</span>
+          <span className="whitespace-normal">{route}</span>
         </div>
 
-        {/* 現在地と優先度の表示エリア */}
         {(showCurrent || showPriority) && (
           <div className="flex gap-3 m-0">
             {showCurrent && (
-              <div className="flex justify-center items-center gap-2.5 bg-primary text-[var(--bg,#FAFAFA)] px-[4px] py-[2px] rounded text-[13px] font-sans font-normal">
+              <div className="flex justify-center items-center gap-2.5 bg-primary text-[var(--bg,#FAFAFA)] px-[4px] py-[2px] rounded text-[13px] font-normal">
                 現在地
               </div>
             )}
-
             {showPriority && (
-              <div className="text-base text-[13px]">優先度: {priority}</div>
+              <div className="text-[13px] text-black">
+                優先度: <span className={priorityColor}>{priority}</span>
+              </div>
             )}
           </div>
         )}
