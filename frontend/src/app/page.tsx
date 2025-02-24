@@ -54,9 +54,10 @@ export default function Home() {
           </div>
         </main>
         <Day day={1} date={new Date(2025, 1, 25)} />
-       <div className="grid flex justify-center align-center">
-      <Input type="text" placeholder="旅行プラン名" />
-        <main></main>
+        <div className="grid flex justify-center align-center">
+          <Input type="text" placeholder="旅行プラン名" />
+          <main></main>
+        </div>
       </div>
     </div>
   );
