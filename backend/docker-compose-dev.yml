@@ -1,5 +1,5 @@
 # docker compose fileのバージョン
-version: "3.8"
+# version: "3.8"
 
 services:
   # データベース用のコンテナ
@@ -20,7 +20,7 @@ services:
 
   django:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile.django.dev
     container_name: django
     command: ["bash", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
