@@ -8,14 +8,16 @@ export interface InputProps
 const PlaceInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
-      <div className="relative flex items-center w-[400px] h-[20px]">
-        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-          <MapPin className="h-5 w-5 text-gray-400" />
-        </span>
+      <div className="relative flex items-center w-[318px] h-[42px]">
+        <MapPin
+          className="
+          w-[15px] h-[15px]
+          text-gray-400 absolute left-4 items-center"
+        />
         <input
           type={type}
           className={cn(
-            "flex h-10 w-full rounded-md border border-input bg-background px-10 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-10 w-full rounded-md border border-input bg-background px-10 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-base file:font-medium placeholder:text-muted-foreground focus-visible:outline-none",
             className
           )}
           ref={ref}
