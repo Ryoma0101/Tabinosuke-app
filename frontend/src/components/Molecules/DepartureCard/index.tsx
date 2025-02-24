@@ -26,8 +26,8 @@ const DepartureCard: React.FC<DepartureCardProps> = ({
           {title}
         </h2>
       </div>
-      <div className="mb-[24px]">
-        <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[20px]">
+      <div className="mb-[16px]">
+        <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           {location}
         </p>
         <PlaceInput />
