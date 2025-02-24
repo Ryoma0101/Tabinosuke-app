@@ -4,7 +4,7 @@ import { PlaceInput } from "@/components/ui/placeinput";
 import { DatePickerDemo } from "@/components/ui/DatePicker";
 import { Clock4 } from "lucide-react";
 
-const DepartureCard: React.FC = ({}) => {
+const DepartureCard: React.FC = () => {
   const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
     event.currentTarget.showPicker();
   };
@@ -24,7 +24,7 @@ const DepartureCard: React.FC = ({}) => {
       </div>
       <div>
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
-          到着予定時刻
+          出発予定時刻
         </p>
         <div className="flex space-x-[16px]">
           <DatePickerDemo />
