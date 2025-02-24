@@ -13,9 +13,10 @@ const DepartureCard: React.FC = () => {
     <ul className="departure-card">
       <div className="mb-[16px]">
         <h2 className="text-[var(--text-border-default,#3F3F46)] font-noto text-[20px] font-normal leading-normal">
-          出発地
+          出発地点
         </h2>
       </div>
+
       <div className="mb-[16px]">
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           場所
@@ -24,7 +25,7 @@ const DepartureCard: React.FC = () => {
       </div>
       <div>
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
-          到着予定時刻
+          出発予定時刻
         </p>
         <div className="flex space-x-[16px]">
           <DatePickerDemo />

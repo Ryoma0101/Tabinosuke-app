@@ -7,6 +7,8 @@ import Day from "@/components/Atoms/Day";
 import Schedule from "@/components/Atoms/Schedule";
 import DepartureCard from "@/components/Molecules/DepartureCard";
 import DestinationCard from "@/components/Molecules/DestinationCard";
+import ViaCard from "@/components/Molecules/ViaCard";
+
 const jsonData = {
   time: "AM 5:00",
   priority: "高", // "低" または "中" も指定可能
@@ -31,6 +33,9 @@ export default function Home() {
           <div className="p-6 gap-6 flex flex-col">
             <DepartureCard />
             <DestinationCard />
+          </div>
+          <div className="p-6 gap-6 flex flex-col">
+            <ViaCard />
           </div>
           <div className="p-6 gap-6 flex flex-col">
             <Schedule
