@@ -31,12 +31,13 @@ class PlaceNameView(APIView):
             headers = {
                 "Content-Type": "application/json",
                 "X-Goog-Api-Key": google_api_key,
-                "X-Goog-FieldMask": "places.displayName,places.location"
+                "X-Goog-FieldMask": "places.displayName,places.location,places.formattedAddress",
+                "Content-Language": "ja"
             }
             
             query = {
                 "textQuery": PlaceName,
-                "pageSize": 5
+                "pageSize": 5,
             }
 
             if BiasUse:
@@ -45,14 +46,18 @@ class PlaceNameView(APIView):
             try:
                 # PlacesAPIへリクエスト送信
                 response = requests.post(places_api_url, headers=headers, json=query)
+                response_data = response.json()
+                places_list = response_data["places"]
+            
                 place_data = {}
+            
                 for index, place in enumerate(places_list, start=1):
                     place_name = place["displayName"]["text"]
                     place_address = place.get("formattedAddress", "No address available")
 
-                    place_data[index] = {"name": place_name, "address": place_address}
+                    place_data[index] = {"name": place_name, "address": place_address, "elements": place}
 
-                return Response(place_data, status=response.status_code)
+                    return Response(place_data, status=response.status_code)
 
             except requests.exceptions.RequestException as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -75,12 +80,13 @@ class PlaceNameView(APIView):
         headers = {
             "Content-Type": "application/json",
             "X-Goog-Api-Key": google_api_key,
-            "X-Goog-FieldMask": "places.displayName,places.formattedAddress"
+            "X-Goog-FieldMask": "places.displayName,places.formattedAddress",
+            "Content-Language": "ja"
         }
 
         query = {
             "textQuery": place_name,
-            "pageSize": 5
+            "pageSize": 5,
         }
 
         try:
