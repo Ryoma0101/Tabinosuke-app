@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import PlaceNameSerializer
 from .serializers import TwoPlaceDistanceSerializer
+from .serializers import ScheduleAdjustSerializer
 load_dotenv()
 
 
@@ -170,5 +171,11 @@ class TwoPlaceDistanceView(APIView):
 
 class ScheduleAdjustmentView(APIView):
     def post(self, request, *args, **kwargs):
-        return {"result": "やったね"}
+        serializer = ScheduleAdjustSerializer(data=request.data)
+        if serializer.is_valid():
+            schedule = serializer.validated_data['schedule']
+            
+            return Response(schedule, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
