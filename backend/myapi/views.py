@@ -166,3 +166,9 @@ class TwoPlaceDistanceView(APIView):
             }
         except requests.exceptions.RequestException as e:
             return {"error": str(e)}
+
+
+class ScheduleAdjustmentView(APIView):
+    def post(self, request, *args, **kwargs):
+        return {"result": "やったね"}
+        
