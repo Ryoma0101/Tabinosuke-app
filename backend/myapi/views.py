@@ -174,8 +174,9 @@ class ScheduleAdjustmentView(APIView):
         serializer = ScheduleAdjustSerializer(data=request.data)
         if serializer.is_valid():
             schedule = serializer.validated_data['schedule']
+            locate_return = [schedule for schedule in schedule["viaPoints"] if schedule["index"] == 1]
             
-            return Response(schedule, status=status.HTTP_200_OK)
+            return Response(locate_return, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
