@@ -38,6 +38,7 @@ class PlaceNameView(APIView):
             query = {
                 "textQuery": PlaceName,
                 "pageSize": 5,
+                "languageCode": 'ja',
             }
 
             if BiasUse:
@@ -47,17 +48,8 @@ class PlaceNameView(APIView):
                 # PlacesAPIへリクエスト送信
                 response = requests.post(places_api_url, headers=headers, json=query)
                 response_data = response.json()
-                places_list = response_data["places"]
-            
-                place_data = {}
-            
-                for index, place in enumerate(places_list, start=1):
-                    place_name = place["displayName"]["text"]
-                    place_address = place.get("formattedAddress", "No address available")
-
-                    place_data[index] = {"name": place_name, "address": place_address, "elements": place}
-
-                    return Response(place_data, status=response.status_code)
+                
+                return Response(response_data, status=response.status_code)
 
             except requests.exceptions.RequestException as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
