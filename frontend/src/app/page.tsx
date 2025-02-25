@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Input } from "../components/Atoms/Input/input";
 import Header from "@/components/Atoms/Header";
@@ -8,6 +9,8 @@ import Schedule from "@/components/Atoms/Schedule";
 import DepartureCard from "@/components/Molecules/DepartureCard";
 import DestinationCard from "@/components/Molecules/DestinationCard";
 import ViaCard from "@/components/Molecules/ViaCard";
+import Card from "@/components/Organisms/Card";
+import AddViaButton from "@/components/Atoms/AddViaButton";
 
 const jsonData = {
   time: "AM 5:00",
@@ -35,7 +38,7 @@ export default function Home() {
             <DestinationCard />
           </div>
           <div className="p-6 gap-6 flex flex-col">
-            <ViaCard />
+            <Card />
           </div>
           <div className="p-6 gap-6 flex flex-col">
             <Schedule

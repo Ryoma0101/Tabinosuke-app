@@ -11,18 +11,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const ViaCard: React.FC = () => {
+interface ViaCardProps {
+  onRemove: () => void;
+}
+
+const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
   const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
     event.currentTarget.showPicker();
   };
 
   return (
-    <ul className="via-card p-4">
+    <ul className="via-card">
       <div className="mb-[16px] flex justify-between items-center w-[318px]">
         <h2 className="text-[var(--text-border-default,#3F3F46)] font-noto text-[20px] font-normal leading-normal">
           経由地
         </h2>
-        <span>
+        <span onClick={onRemove}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -90,7 +94,7 @@ const ViaCard: React.FC = () => {
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           出発時間目安
         </p>
-        <div className="flex space-x-[16px] mb-10">
+        <div className="flex space-x-[16px] mb-[52px]">
           <DatePickerDemo />
           <div className="relative flex items-center w-[102px] h-[43px]">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
