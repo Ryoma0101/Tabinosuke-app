@@ -2,33 +2,45 @@ services:
   - type: web
     name: django
     env: docker
-    plan: free  # 必要に応じて変更
     dockerfilePath: Dockerfile.django.dev
     envVars:
-      - key: POSTGRES_USER
-        value: your_db_user
-      - key: POSTGRES_PASSWORD
-        value: your_db_password
-    healthCheckPath: /
-    autoDeploy: true
-    disk:
-      name: backend-storage
-      mountPath: /app
-      sizeGB: 1  # 必要に応じて変更
-    buildCommand: "pip install -r requirements.txt"
+      - key: DB_USER
+        fromEnvFile: .env
+      - key: DB_PASSWORD
+        fromEnvFile: .env
+    buildCommand: ""
     startCommand: "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    healthCheckPath: /
+    httpPort: 8000
+    disk:
+      name: django-data
+      mountPath: /app
+      sizeGB: 1
+    dependsOn:
+      - postgres
 
   - type: pserv
     name: postgres
     env: docker
-    plan: free  # 必要に応じて変更
-    image: "postgres:14"  # ここを修正（ダブルクォートで囲む）
+    image: postgres:14
     envVars:
       - key: POSTGRES_USER
-        value: your_db_user
+        fromEnvFile: .env
       - key: POSTGRES_PASSWORD
-        value: your_db_password
+        fromEnvFile: .env
     disk:
-      name: db-storage
+      name: postgres-data
       mountPath: /var/lib/postgresql/data
-      sizeGB: 1  # 必要に応じて変更
+      sizeGB: 1
+    healthCheckCommand: pg_isready -U $DB_USER
+    healthCheckInterval: 10s
+    healthCheckTimeout: 5s
+    healthCheckMaxRetries: 10
+
+envVarGroups:
+  - name: django-env
+    envFile: .env
+
+networks:
+  - name: webnet
+    internal: false
