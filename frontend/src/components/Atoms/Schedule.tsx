@@ -50,7 +50,9 @@ export default function Schedule({
       </div>
 
       <div className="flex flex-col flex-1 gap-3">
-        <div className="flex items-start text-base">
+        <div className="flex items-center text-[13px]">
+          {" "}
+          {/* items-startをitems-centerに変更 */}
           <Image
             src="/icons/pin.svg"
             alt="Pin Icon"
@@ -59,20 +61,18 @@ export default function Schedule({
             className="mr-1 flex-shrink-0"
           />
           <span className="whitespace-normal">{route}</span>
+          {showCurrent && (
+            <div className="flex justify-center items-center gap-2.5 bg-primary text-[var(--bg,#FAFAFA)] px-[4px] py-[2px] rounded text-[11px] ml-2">
+              現在地
+            </div>
+          )}
         </div>
 
-        {(showCurrent || showPriority) && (
+        {showPriority && (
           <div className="flex gap-3 m-0">
-            {showCurrent && (
-              <div className="flex justify-center items-center gap-2.5 bg-primary text-[var(--bg,#FAFAFA)] px-[4px] py-[2px] rounded text-[13px] font-normal">
-                現在地
-              </div>
-            )}
-            {showPriority && (
-              <div className="text-[13px] text-black">
-                優先度: <span className={priorityColor}>{priority}</span>
-              </div>
-            )}
+            <div className="text-[13px] text-black">
+              優先度: <span className={priorityColor}>{priority}</span>
+            </div>
           </div>
         )}
       </div>
