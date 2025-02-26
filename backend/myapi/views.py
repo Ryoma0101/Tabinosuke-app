@@ -2,6 +2,7 @@ import os
 import json
 from dotenv import load_dotenv
 import requests
+from datetime import timedelta
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -181,7 +182,65 @@ class ScheduleAdjustmentView(APIView):
             delay = now_time - locate_return["arrivalDateTime"]
             if delay.total_seconds() <= 0:
                 return Response(0, status=status.HTTP_200_OK)
-            return Response(delay, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            # passed_index以降のviaPointsを取得
+            remaining_points = [p for p in schedule["viaPoints"] if p["index"] > passed_index]
+            
+            # 各ポイントの持ち時間を計算
+            point_durations = []
+            for point in remaining_points:
+                duration = point["departureDateTime"] - point["arrivalDateTime"] 
+                point_durations.append({
+                    "index": point["index"],
+                    "duration": duration,
+                    "priority": point.get("priority", 1),
+                    "max_delay": duration.total_seconds() * 0.3  # 30%制限
+                })
+
+            # 優先度でグループ化
+            priority_groups = {}
+            for pd in point_durations:
+                if pd["priority"] not in priority_groups:
+                    priority_groups[pd["priority"]] = []
+                priority_groups[pd["priority"]].append(pd)
+
+            # 遅延を分配
+            total_delay = delay.total_seconds()
+            original_delay = total_delay  # 元のdelayを保存
+            separated_delay = {}
+            
+            # 優先度の低い順に遅延を分配
+            for priority in sorted(priority_groups.keys(), reverse=True):
+                group = priority_groups[priority]
+                group_delay = total_delay / len(remaining_points)
+                
+                for point in group:
+                    # 各ポイントに割り当てる遅延時間を計算
+                    allocated_delay = min(group_delay, point["max_delay"])
+                    # 滞在時間から遅延時間を引く (マイナスの遅延 = 滞在時間の短縮)
+                    separated_delay[point["index"]] = -allocated_delay
+                    total_delay -= allocated_delay
+                    
+                    # スケジュールの更新
+                    target_point = [p for p in remaining_points if p["index"] == point["index"]][0]
+                    new_departure = target_point["departureDateTime"] - timedelta(seconds=allocated_delay)
+                    target_point["departureDateTime"] = new_departure
+                    
+            # 修正したスケジュールを作成
+            
+            fixed_schedule = schedule.copy()
+            fixed_schedule["viaPoints"] = [p for p in schedule["viaPoints"] if p["index"] <= passed_index] + remaining_points
+            
+            # 短縮時間と余った遅延時間を計算
+            total_shortened = sum([-delay for delay in separated_delay.values()])
+            remaining_delay = total_delay if total_delay > 0 else 0
+            
+            response_data = {
+                "schedule": fixed_schedule,
+                "shortened_time": total_shortened,
+                "remaining_delay": remaining_delay,
+                "delay_": original_delay
+            }
+            
+            return Response(response_data, status=status.HTTP_200_OK)
         
