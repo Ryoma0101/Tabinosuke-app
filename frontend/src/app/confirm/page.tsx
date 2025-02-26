@@ -8,12 +8,27 @@ import { Button } from "@/components/ui/button";
 import CurrentTimeLine from "@/components/Atoms/currentTineLine";
 
 export default function ConfirmPage() {
-  // 現在のアクティブなスケジュールのIDを保持する状態
   const [activeSchedule, setActiveSchedule] = useState(null);
+  const [timeLineColor, setTimeLineColor] = useState<"green" | "red">("green");
+
+  // 現在地の位置に基づいて線の色を更新する関数
+  const updateTimeLineColor = (scheduleId: string) => {
+    // 現在地より上のスケジュールのID一覧
+    const schedulesBefore = ["schedule1"];
+    // 現在地より下のスケジュールのID一覧
+    const schedulesAfter = ["schedule2", "schedule3", "schedule4"];
+
+    if (schedulesBefore.includes(scheduleId)) {
+      setTimeLineColor("green");
+    } else if (schedulesAfter.includes(scheduleId)) {
+      setTimeLineColor("red");
+    }
+  };
 
   // スケジュールクリック時のハンドラー
-  const handleScheduleClick = (scheduleId) => {
+  const handleScheduleClick = (scheduleId: string) => {
     setActiveSchedule(scheduleId);
+    updateTimeLineColor(scheduleId);
   };
 
   return (
@@ -21,8 +36,7 @@ export default function ConfirmPage() {
       <div className="min-h-screen bg-gray-100 flex justify-center">
         <div className="w-full max-w-[768px] mx-auto bg-white px-9 py-4">
           <div className="flex flex-col gap-11">
-            <Header text="スケジュール確認" />
-            <Day day={1} date={new Date(2025, 1, 25)} />
+            {/* ... Header と Day コンポーネント ... */}
             <div className="flex flex-col gap-11">
               <div onClick={() => handleScheduleClick("schedule1")}>
                 <Schedule
@@ -36,7 +50,7 @@ export default function ConfirmPage() {
                 time={new Date("2024-02-20T10:30:00")}
                 transport="電車"
               />
-              <CurrentTimeLine lineColor="green" />
+              <CurrentTimeLine lineColor={timeLineColor} />
               <div onClick={() => handleScheduleClick("schedule2")}>
                 <Schedule
                   time={new Date("2024-02-20T11:00:00")}
