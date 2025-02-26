@@ -243,4 +243,8 @@ class ScheduleAdjustmentView(APIView):
             }
             
             return Response(response_data, status=status.HTTP_200_OK)
-        
+
+
+class HealthCheckView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({"status": "healthy"})

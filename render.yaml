@@ -1,46 +1,55 @@
 services:
-  - type: web
-    name: django
+  # PostgreSQLデータベース
+  postgres:
+    name: tabinosuke-postgres
+    plan: starter
+    type: pserv
     env: docker
-    dockerfilePath: Dockerfile.django.dev
-    envVars:
-      - key: DB_USER
-        fromEnvFile: .env
-      - key: DB_PASSWORD
-        fromEnvFile: .env
-    buildCommand: ""
-    startCommand: "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-    healthCheckPath: /
-    httpPort: 8000
     disk:
-      name: django-data
-      mountPath: /app
-      sizeGB: 1
-    dependsOn:
-      - postgres
-
-  - type: pserv
-    name: postgres
-    env: docker
-    image: postgres:14
+      name: postgres
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 10
     envVars:
       - key: POSTGRES_USER
-        fromEnvFile: .env
+        fromEnvVar: DB_USER
       - key: POSTGRES_PASSWORD
-        fromEnvFile: .env
-    disk:
-      name: postgres-data
-      mountPath: /var/lib/postgresql/data
-      sizeGB: 1
-    healthCheckCommand: pg_isready -U $DB_USER
-    healthCheckInterval: 10s
-    healthCheckTimeout: 5s
-    healthCheckMaxRetries: 10
+        fromEnvVar: DB_PASSWORD
 
-envVarGroups:
-  - name: django-env
-    envFile: .env
+  # Djangoアプリケーション
+  django:
+    name: tabinosuke-api
+    type: web
+    env: docker
+    plan: starter
+    region: singapore  # アジア圏で最も近い地域
+    buildCommand: pip install -r requirements.txt
+    startCommand: python manage.py migrate && python manage.py runserver 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: pserv
+          name: tabinosuke-postgres
+          property: connectionString
+      - key: PORT
+        value: 8000
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: google_api_key
+        sync: false  # 手動で設定する必要のある機密情報
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+    healthCheckPath: /api/health/  # ヘルスチェックエンドポイントを追加する必要があります
+    autoDeploy: true
+    domains:
+      - tabinosuke-api.onrender.com
 
-networks:
-  - name: webnet
-    internal: false
+databases:
+  - name: tabinosuke-db
+    plan: starter
+    ipAllowList: []  # IP制限なし
