@@ -6,28 +6,28 @@ services:
     dockerfilePath: Dockerfile.django.dev
     envVars:
       - key: POSTGRES_USER
-        value: ${DB_USER}
+        value: your_db_user
       - key: POSTGRES_PASSWORD
-        value: ${DB_PASSWORD}
+        value: your_db_password
     healthCheckPath: /
     autoDeploy: true
     disk:
       name: backend-storage
       mountPath: /app
       sizeGB: 1  # 必要に応じて変更
-    envFile: .env
     buildCommand: "pip install -r requirements.txt"
     startCommand: "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-  - type: pserv
+
+  - type: privateService
     name: postgres
     env: docker
     plan: free  # 必要に応じて変更
-    image: postgres:14
+    dockerImage: postgres:14
     envVars:
       - key: POSTGRES_USER
-        value: ${DB_USER}
+        value: your_db_user
       - key: POSTGRES_PASSWORD
-        value: ${DB_PASSWORD}
+        value: your_db_password
     disk:
       name: db-storage
       mountPath: /var/lib/postgresql/data
