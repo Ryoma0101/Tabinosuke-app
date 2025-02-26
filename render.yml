@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: django
+    env: docker
+    plan: free  # 必要に応じて変更
+    dockerfilePath: Dockerfile.django.dev
+    envVars:
+      - key: POSTGRES_USER
+        fromService:
+          name: postgres
+          envVarKey: POSTGRES_USER
+      - key: POSTGRES_PASSWORD
+        fromService:
+          name: postgres
+          envVarKey: POSTGRES_PASSWORD
+    healthCheckPath: /
+    autoDeploy: true
+    disk:
+      name: backend-storage
+      mountPath: /app
+      sizeGB: 1  # 必要に応じて変更
+    envFile: .env
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+  - type: pserv
+    name: postgres
+    env: docker
+    plan: free  # 必要に応じて変更
+    image: postgres:14
+    envVars:
+      - key: POSTGRES_USER
+        value: ${DB_USER}
+      - key: POSTGRES_PASSWORD
+        value: ${DB_PASSWORD}
+    disk:
+      name: db-storage
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1  # 必要に応じて変更
