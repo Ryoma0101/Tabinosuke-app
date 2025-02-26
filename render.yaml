@@ -6,13 +6,9 @@ services:
     dockerfilePath: Dockerfile.django.dev
     envVars:
       - key: POSTGRES_USER
-        fromService:
-          name: postgres
-          envVarKey: POSTGRES_USER
+        value: ${DB_USER}
       - key: POSTGRES_PASSWORD
-        fromService:
-          name: postgres
-          envVarKey: POSTGRES_PASSWORD
+        value: ${DB_PASSWORD}
     healthCheckPath: /
     autoDeploy: true
     disk:
@@ -22,7 +18,6 @@ services:
     envFile: .env
     buildCommand: "pip install -r requirements.txt"
     startCommand: "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
-
   - type: pserv
     name: postgres
     env: docker
