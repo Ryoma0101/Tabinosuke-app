@@ -1,4 +1,3 @@
-# render.yaml
 services:
   - type: web
     name: tabinosuke-api
@@ -29,21 +28,7 @@ services:
     healthCheckPath: /api/health/
     autoDeploy: true
 
-  - type: pserv
-    name: tabinosuke-postgres
-    env: docker
-    plan: starter
-    disk:
-      name: postgres
-      mountPath: /var/lib/postgresql/data
-      sizeGB: 10
-    envVars:
-      - key: POSTGRES_USER
-        value: "postgres"
-      - key: POSTGRES_PASSWORD
-        generateValue: true
-
 databases:
   - name: tabinosuke-db
     plan: starter
-    ipAllowList: []
+    ipAllowList: []  # 必要に応じてIPリストを追加する
