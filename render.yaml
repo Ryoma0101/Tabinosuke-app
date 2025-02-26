@@ -18,7 +18,7 @@ services:
     buildCommand: "pip install -r requirements.txt"
     startCommand: "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
 
-  - type: privateService
+  - type: pserv
     name: postgres
     env: docker
     plan: free  # 必要に応じて変更
