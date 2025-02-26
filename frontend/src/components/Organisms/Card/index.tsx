@@ -1,9 +1,6 @@
+"use client";
 import React, { useState } from "react";
-import Header from "@/components/Atoms/Header";
 import { Button } from "@/components/ui/button";
-import TransportSelector from "@/components/Molecules/TransportSelector";
-import Day from "@/components/Atoms/Day";
-import Schedule from "@/components/Atoms/Schedule";
 import DepartureCard from "@/components/Molecules/DepartureCard";
 import DestinationCard from "@/components/Molecules/DestinationCard";
 import ViaCard from "@/components/Molecules/ViaCard";
@@ -11,6 +8,7 @@ import AddViaButton from "@/components/Atoms/AddViaButton";
 import { Input } from "@/components/Atoms/Input/input";
 
 const initialVias: number[] = [];
+
 const Card: React.FC = () => {
   const [ViaList, setViaList] = useState(initialVias);
 
@@ -41,7 +39,6 @@ const Card: React.FC = () => {
         ))}
         <AddViaButton onClick={onAddViaButtonClick} />
       </div>
-
       <div>
         <DestinationCard />
       </div>
