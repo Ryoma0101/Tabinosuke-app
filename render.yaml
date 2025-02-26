@@ -6,7 +6,7 @@ services:
     plan: starter
     region: singapore
     buildCommand: pip install -r requirements.txt
-    startCommand: python manage.py migrate && python manage.py runserver 0.0.0.0:$PORT
+    dockerCommand: python manage.py migrate && python manage.py runserver 0.0.0.0:$PORT
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -39,9 +39,9 @@ services:
       sizeGB: 10
     envVars:
       - key: POSTGRES_USER
-        fromEnvVar: DB_USER
+        value: "postgres"
       - key: POSTGRES_PASSWORD
-        fromEnvVar: DB_PASSWORD
+        generateValue: true
 
 databases:
   - name: tabinosuke-db
