@@ -36,7 +36,8 @@ export default function ConfirmPage() {
       <div className="min-h-screen bg-gray-100 flex justify-center">
         <div className="w-full max-w-[768px] mx-auto bg-white px-9 py-4">
           <div className="flex flex-col gap-11">
-            {/* ... Header と Day コンポーネント ... */}
+            <Header text="スケジュール確認" />
+            <Day day={1} date={new Date(2025, 1, 25)} />
             <div className="flex flex-col gap-11">
               <div onClick={() => handleScheduleClick("schedule1")}>
                 <Schedule
