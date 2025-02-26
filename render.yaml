@@ -22,7 +22,7 @@ services:
     name: postgres
     env: docker
     plan: free  # 必要に応じて変更
-    image: postgres:14  # ここを修正
+    image: "postgres:14"  # ここを修正（ダブルクォートで囲む）
     envVars:
       - key: POSTGRES_USER
         value: your_db_user
