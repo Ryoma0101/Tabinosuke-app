@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG')
+DEBUG = os.getenv('DJANGO_DEBUG',False)
 
 # テスト環境用のコード。本番時には取り替える様。
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,two025-tabinosuke-dev.onrender.com').split(',')
