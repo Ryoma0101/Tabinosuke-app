@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import TravelPlan, StartPoint, FinalPoint, ViaPoint
 
+
 class PlaceNameSerializer(serializers.Serializer):
     place_name = serializers.CharField()
     place_bias = serializers.CharField(required=False)

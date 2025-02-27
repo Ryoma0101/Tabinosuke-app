@@ -1,11 +1,10 @@
 import os
-import json
 from dotenv import load_dotenv
 import requests
 from datetime import timedelta
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, generics
+from rest_framework import status
 from .serializers import PlaceNameSerializer, TravelPlanSerializer
 from .serializers import TwoPlaceDistanceSerializer
 from .serializers import ScheduleAdjustSerializer
@@ -21,22 +20,22 @@ class PlaceNameView(APIView):
 
             if not PlaceName:
                 return Response({"error": "place_name is required"}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             BiasUse = bool(PlaceBias)
-            
+
             # Places APIのURL
             places_api_url = "https://places.googleapis.com/v1/places:searchText"
-            
+
             # Google API Key
             google_api_key = os.getenv('google_api_key')
-            
+
             headers = {
                 "Content-Type": "application/json",
                 "X-Goog-Api-Key": google_api_key,
                 "X-Goog-FieldMask": "places.displayName,places.location,places.formattedAddress",
                 "Content-Language": "ja"
             }
-            
+
             query = {
                 "textQuery": PlaceName,
                 "pageSize": 5,
@@ -45,20 +44,19 @@ class PlaceNameView(APIView):
 
             if BiasUse:
                 query["locationBias"] = PlaceBias
-                
+
             try:
                 # PlacesAPIへリクエスト送信
                 response = requests.post(places_api_url, headers=headers, json=query)
                 response_data = response.json()
-                
+
                 return Response(response_data, status=response.status_code)
 
             except requests.exceptions.RequestException as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    
+
     def get(self, request, *args, **kwargs):
         place_name = request.GET.get("place_name")
 
@@ -93,7 +91,7 @@ class PlaceNameView(APIView):
                 return Response({"error": "No places found"}, status=status.HTTP_404_NOT_FOUND)
 
             places_list = response_data["places"]
-            
+
             place_data = {}
             for index, place in enumerate(places_list, start=1):
                 place_name = place["displayName"]["text"]
@@ -118,7 +116,7 @@ class TwoPlaceDistanceView(APIView):
             distance_data = self.get_distance(place_from, place_to, mode)
             if 'error' in distance_data:
                 return Response(distance_data, status=status.HTTP_400_BAD_REQUEST)
-            
+
             return Response(distance_data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -130,13 +128,13 @@ class TwoPlaceDistanceView(APIView):
 
         if not place_from or not place_to:
             return Response({"error": "Both place_from and place_to are required"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         distance_data = self.get_distance(place_from, place_to, mode)
         if 'error' in distance_data:
             return Response(distance_data, status=status.HTTP_400_BAD_REQUEST)
-        
+
         return Response(distance_data, status=status.HTTP_200_OK)
-    
+
     def get_distance(self, origin, destination, mode):
         google_api_key = os.getenv("google_api_key")
         distance_matrix_url = "https://maps.googleapis.com/maps/api/distancematrix/json"
@@ -154,11 +152,11 @@ class TwoPlaceDistanceView(APIView):
 
             if data.get("status") != "OK":
                 return {"error": "Failed to fetch distance data", "details": data}
-            
+
             elements = data["rows"][0]["elements"][0]
             if elements.get("status") != "OK":
                 return {"error": "Invalid locations", "details": elements}
-            
+
             return {
                 "origin": origin,
                 "destination": destination,
@@ -195,11 +193,11 @@ class ScheduleAdjustmentView(APIView):
 
             # passed_index以降のviaPointsを取得
             remaining_points = [p for p in schedule["via_points"] if p["index"] > passed_index]
-            
+
             # 各ポイントの持ち時間を計算
             point_durations = []
             for point in remaining_points:
-                duration = point["departure_datetime"] - point["arrival_datetime"] 
+                duration = point["departure_datetime"] - point["arrival_datetime"]
                 point_durations.append({
                     "index": point["index"],
                     "duration": duration,
@@ -218,40 +216,40 @@ class ScheduleAdjustmentView(APIView):
             total_delay = delay.total_seconds()
             original_delay = total_delay  # 元のdelayを保存
             separated_delay = {}
-            
+
             # 優先度の低い順に遅延を分配
             for priority in sorted(priority_groups.keys(), reverse=True):
                 group = priority_groups[priority]
                 group_delay = total_delay / len(remaining_points)
-                
+
                 for point in group:
                     # 各ポイントに割り当てる遅延時間を計算
                     allocated_delay = min(group_delay, point["max_delay"])
                     # 滞在時間から遅延時間を引く (マイナスの遅延 = 滞在時間の短縮)
                     separated_delay[point["index"]] = -allocated_delay
                     total_delay -= allocated_delay
-                    
+
                     # スケジュールの更新
                     target_point = [p for p in remaining_points if p["index"] == point["index"]][0]
                     new_departure = target_point["departure_datetime"] - timedelta(seconds=allocated_delay)
                     target_point["departure_datetime"] = new_departure
-                    
+
             # 修正したスケジュールを作成
-            
+
             fixed_schedule = schedule.copy()
             fixed_schedule["via_points"] = [p for p in schedule["via_points"] if p["index"] <= passed_index] + remaining_points
-            
+
             # 短縮時間と余った遅延時間を計算
             total_shortened = sum([-delay for delay in separated_delay.values()])
             remaining_delay = total_delay if total_delay > 0 else 0
-            
+
             response_data = {
                 "schedule": fixed_schedule,
                 "shortened_time": total_shortened,
                 "remaining_delay": remaining_delay,
                 "delay_": original_delay
             }
-            
+
             return Response(response_data, status=status.HTTP_200_OK)
 
 

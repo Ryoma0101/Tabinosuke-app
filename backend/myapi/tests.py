@@ -14,18 +14,18 @@ class ModelTests(TestCase):
             departure_datetime=timezone.now(),
             travel_method_to_next="電車"
         )
-        
+
         self.final_point = FinalPoint.objects.create(
             location="大阪駅",
             arrival_datetime=timezone.now() + timedelta(hours=3)
         )
-        
+
         self.travel_plan = TravelPlan.objects.create(
             plan_name="東京-大阪旅行",
             start_point=self.start_point,
             final_point=self.final_point
         )
-        
+
         self.via_point = ViaPoint.objects.create(
             index=1,
             plan=self.travel_plan,
@@ -59,19 +59,19 @@ class APITests(TestCase):
     def setUp(self):
         self.client = Client()
         self.now = timezone.now()
-        
+
         # テストデータの作成
         self.start_point = StartPoint.objects.create(
             location="東京駅",
             departure_datetime=self.now,
             travel_method_to_next="電車"
         )
-        
+
         self.final_point = FinalPoint.objects.create(
             location="大阪駅",
             arrival_datetime=self.now + timedelta(hours=3)
         )
-        
+
         self.travel_plan = TravelPlan.objects.create(
             plan_name="東京-大阪旅行",
             start_point=self.start_point,
@@ -106,7 +106,7 @@ class APITests(TestCase):
         arrival_time = self.now + timedelta(hours=2)
         departure_time = self.now + timedelta(hours=3)
         final_arrival = self.now + timedelta(hours=5)
-        
+
         data = {
             "plan_name": "新規旅行プラン",
             "start_point": {
