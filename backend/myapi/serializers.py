@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from .models import TravelPlan, StartPoint, FinalPoint, ViaPoint
 
 class PlaceNameSerializer(serializers.Serializer):
     place_name = serializers.CharField()
@@ -12,34 +12,55 @@ class TwoPlaceDistanceSerializer(serializers.Serializer):
     mode = serializers.CharField()
 
 
-class StartPointSerializer(serializers.Serializer):
-    location = serializers.CharField(max_length=100)
-    departureDateTime = serializers.DateTimeField()
-    travelMethodToNext = serializers.CharField(max_length=50)
+class StartPointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StartPoint
+        fields = "__all__"
 
 
-class ViaPointSerializer(serializers.Serializer):
-    index = serializers.IntegerField()
-    location = serializers.CharField(max_length=100)
-    arrivalDateTime = serializers.DateTimeField(required=False)
-    departureDateTime = serializers.DateTimeField(required=False)
-    priority = serializers.CharField(max_length=10, required=False)
-    travelMethodToNext = serializers.CharField(max_length=50, required=False)
+class FinalPointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FinalPoint
+        fields = "__all__"
 
 
-class FinalPointSerializer(serializers.Serializer):
-    location = serializers.CharField(max_length=100)
-    arrivalDateTime = serializers.DateTimeField()
+class ViaPointSerializer(serializers.ModelSerializer):
+    plan = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = ViaPoint
+        fields = ["index", "plan", "location", "arrival_datetime", "priority", "departure_datetime", "travel_method_to_next"]
 
 
-class ScheduleSerializer(serializers.Serializer):
-    startPoint = StartPointSerializer()
-    viaPoints = ViaPointSerializer(many=True)
-    finalPoint = FinalPointSerializer()
+class TravelPlanSerializer(serializers.ModelSerializer):
+    start_point = StartPointSerializer()
+    final_point = FinalPointSerializer()
+    via_points = ViaPointSerializer(many=True)
+
+    class Meta:
+        model = TravelPlan
+        fields = "__all__"
+
+    def create(self, validated_data):
+        start_point_data = validated_data.pop("start_point")
+        final_point_data = validated_data.pop("final_point")
+        via_points_data = validated_data.pop("via_points", [])
+
+        start_point = StartPoint.objects.create(**start_point_data)
+        final_point = FinalPoint.objects.create(**final_point_data)
+
+        travel_plan = TravelPlan.objects.create(
+            start_point=start_point, final_point=final_point, **validated_data
+        )
+
+        for via_point_data in via_points_data:
+            ViaPoint.objects.create(plan=travel_plan, **via_point_data)
+
+        return travel_plan
 
 
 class ScheduleAdjustSerializer(serializers.Serializer):
-    schedule = ScheduleSerializer()
+    schedule = TravelPlanSerializer()
     now_time = serializers.DateTimeField()
     passed_index = serializers.IntegerField()
     delete = serializers.BooleanField()

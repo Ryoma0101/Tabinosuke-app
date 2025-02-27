@@ -5,8 +5,8 @@ import requests
 from datetime import timedelta
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from .serializers import PlaceNameSerializer
+from rest_framework import status, generics
+from .serializers import PlaceNameSerializer, TravelPlanSerializer
 from .serializers import TwoPlaceDistanceSerializer
 from .serializers import ScheduleAdjustSerializer
 load_dotenv()
@@ -170,6 +170,16 @@ class TwoPlaceDistanceView(APIView):
             return {"error": str(e)}
 
 
+class TravelPlanCreateView(APIView):
+    def post(self, request):
+        serializer = TravelPlanSerializer(data=request.data)
+
+        if serializer.is_valid():
+            travel_plan = serializer.save()
+            return Response({"id": travel_plan.id}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ScheduleAdjustmentView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = ScheduleAdjustSerializer(data=request.data)
@@ -178,13 +188,13 @@ class ScheduleAdjustmentView(APIView):
             passed_index = serializer.validated_data['passed_index']
             now_time = serializer.validated_data['now_time']
             not_passed_index = passed_index+1
-            locate_return = [schedule for schedule in schedule["viaPoints"] if schedule["index"] == not_passed_index][0]
+            locate_return = [schedule for schedule in schedule["via_points"] if schedule["index"] == not_passed_index][0]
             delay = now_time - locate_return["arrivalDateTime"]
             if delay.total_seconds() <= 0:
                 return Response(0, status=status.HTTP_200_OK)
 
             # passed_index以降のviaPointsを取得
-            remaining_points = [p for p in schedule["viaPoints"] if p["index"] > passed_index]
+            remaining_points = [p for p in schedule["via_points"] if p["index"] > passed_index]
             
             # 各ポイントの持ち時間を計算
             point_durations = []
@@ -229,7 +239,7 @@ class ScheduleAdjustmentView(APIView):
             # 修正したスケジュールを作成
             
             fixed_schedule = schedule.copy()
-            fixed_schedule["viaPoints"] = [p for p in schedule["viaPoints"] if p["index"] <= passed_index] + remaining_points
+            fixed_schedule["via_points"] = [p for p in schedule["via_points"] if p["index"] <= passed_index] + remaining_points
             
             # 短縮時間と余った遅延時間を計算
             total_shortened = sum([-delay for delay in separated_delay.values()])
