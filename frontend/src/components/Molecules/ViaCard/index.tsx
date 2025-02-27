@@ -10,6 +10,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import TransportSelector from "../TransportSelector";
 
 interface ViaCardProps {
   onRemove: () => void;
@@ -21,7 +22,7 @@ const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
   };
 
   return (
-    <ul className="via-card">
+    <ul className="via-cards">
       <div className="mb-[16px] flex justify-between items-center w-[318px]">
         <h2 className="text-[var(--text-border-default,#3F3F46)] font-noto text-[20px] font-normal leading-normal">
           経由地
@@ -116,6 +117,7 @@ const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
           </div>
         </div>
       </div>
+      <TransportSelector />
     </ul>
   );
 };

@@ -6,6 +6,7 @@ import DestinationCard from "@/components/Molecules/DestinationCard";
 import ViaCard from "@/components/Molecules/ViaCard";
 import AddViaButton from "@/components/Atoms/AddViaButton";
 import { Input } from "@/components/Atoms/Input/input";
+import TransportSelector from "@/components/Molecules/TransportSelector";
 
 const initialVias: number[] = [];
 
@@ -30,7 +31,8 @@ const Card: React.FC = () => {
       <div>
         <DepartureCard />
       </div>
-      <div>
+      <TransportSelector />
+      <div className="flex flex-col gap-[52px]">
         {ViaList.map((_, index) => (
           <ViaCard
             key={index}
