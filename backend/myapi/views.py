@@ -185,11 +185,23 @@ class ScheduleAdjustmentView(APIView):
             schedule = serializer.validated_data['schedule']
             passed_index = serializer.validated_data['passed_index']
             now_time = serializer.validated_data['now_time']
-            not_passed_index = passed_index+1
-            locate_return = [schedule for schedule in schedule["via_points"] if schedule["index"] == not_passed_index][0]
+            not_passed_index = passed_index + 1
+
+            # locate_returnが見つからない場合の処理を追加
+            locate_return = next((schedule for schedule in schedule["via_points"] if schedule["index"] == not_passed_index), None)
+            if not locate_return:
+                return Response({"error": "Invalid index for locate_return"}, status=status.HTTP_400_BAD_REQUEST)
+
             delay = now_time - locate_return["arrival_datetime"]
             if delay.total_seconds() <= 0:
-                return Response(0, status=status.HTTP_200_OK)
+                # 遅延がない場合でも、スケジュール情報を含むレスポンスを返す
+                response_data = {
+                    "schedule": schedule,
+                    "shortened_time": 0,
+                    "remaining_delay": 0,
+                    "delay": delay.total_seconds()
+                }
+                return Response(response_data, status=status.HTTP_200_OK)
 
             # passed_index以降のviaPointsを取得
             remaining_points = [p for p in schedule["via_points"] if p["index"] > passed_index]
@@ -235,7 +247,6 @@ class ScheduleAdjustmentView(APIView):
                     target_point["departure_datetime"] = new_departure
 
             # 修正したスケジュールを作成
-
             fixed_schedule = schedule.copy()
             fixed_schedule["via_points"] = [p for p in schedule["via_points"] if p["index"] <= passed_index] + remaining_points
 
@@ -247,10 +258,12 @@ class ScheduleAdjustmentView(APIView):
                 "schedule": fixed_schedule,
                 "shortened_time": total_shortened,
                 "remaining_delay": remaining_delay,
-                "delay_": original_delay
+                "delay": original_delay
             }
 
             return Response(response_data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class HealthCheckView(APIView):
