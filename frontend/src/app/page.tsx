@@ -10,7 +10,7 @@ import DepartureCard from "@/components/Molecules/DepartureCard";
 import DestinationCard from "@/components/Molecules/DestinationCard";
 import ViaCard from "@/components/Molecules/ViaCard";
 import Card from "@/components/Organisms/Card";
-import InputPage from "@/Pages/InputPage";
+// import InputPage from "@/Pages/InputPage";
 
 const jsonData = {
   time: "AM 5:00",
@@ -23,6 +23,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 flex justify-center">
       <div className="w-full max-w-[768px] my-0 mx-[30px] bg-white">
         <Header text="計画" />
+        <Card />
         <main>
           <div className="p-4 flex flex-row gap-10">
             <Button variant="outline" className="w-[136px]">
@@ -39,7 +40,7 @@ export default function Home() {
           </div>
           <div className="p-6 gap-6 flex flex-col">
             <Card />
-            <InputPage />
+            {/* <InputPage /> */}
           </div>
           <div className="p-6 gap-6 flex flex-col">
             <Schedule
