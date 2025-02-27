@@ -52,6 +52,9 @@ jobs:
         DB_PORT: 5432
         DJANGO_SETTINGS_MODULE: config.settings
         google_api_key: ${{ secrets.GOOGLE_API_KEY }}
+        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+        DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}
+        DJANGO_ALLOWED_HOSTS: ${{ secrets.DJANGO_ALLOWED_HOSTS }}
       run: |
         python manage.py makemigrations myapi
         python manage.py migrate
