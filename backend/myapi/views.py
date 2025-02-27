@@ -189,7 +189,7 @@ class ScheduleAdjustmentView(APIView):
             now_time = serializer.validated_data['now_time']
             not_passed_index = passed_index+1
             locate_return = [schedule for schedule in schedule["via_points"] if schedule["index"] == not_passed_index][0]
-            delay = now_time - locate_return["arrivalDateTime"]
+            delay = now_time - locate_return["arrival_datetime"]
             if delay.total_seconds() <= 0:
                 return Response(0, status=status.HTTP_200_OK)
 
@@ -199,7 +199,7 @@ class ScheduleAdjustmentView(APIView):
             # 各ポイントの持ち時間を計算
             point_durations = []
             for point in remaining_points:
-                duration = point["departureDateTime"] - point["arrivalDateTime"] 
+                duration = point["departure_datetime"] - point["arrival_datetime"] 
                 point_durations.append({
                     "index": point["index"],
                     "duration": duration,
@@ -233,8 +233,8 @@ class ScheduleAdjustmentView(APIView):
                     
                     # スケジュールの更新
                     target_point = [p for p in remaining_points if p["index"] == point["index"]][0]
-                    new_departure = target_point["departureDateTime"] - timedelta(seconds=allocated_delay)
-                    target_point["departureDateTime"] = new_departure
+                    new_departure = target_point["departure_datetime"] - timedelta(seconds=allocated_delay)
+                    target_point["departure_datetime"] = new_departure
                     
             # 修正したスケジュールを作成
             
