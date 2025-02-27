@@ -5,7 +5,7 @@ import DepartureCard from "@/components/Molecules/DepartureCard";
 import DestinationCard from "@/components/Molecules/DestinationCard";
 import ViaCard from "@/components/Molecules/ViaCard";
 import AddViaButton from "@/components/Atoms/AddViaButton";
-import { Input } from "@/components/Atoms/Input/input";
+import { Input } from "@/components/Atoms/Input";
 import TransportSelector from "@/components/Molecules/TransportSelector";
 
 const initialVias: number[] = [];
