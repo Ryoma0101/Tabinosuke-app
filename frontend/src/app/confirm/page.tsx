@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import CurrentTimeLine from "@/components/Atoms/currentTineLine";
 
 export default function ConfirmPage() {
-  const [activeSchedule, setActiveSchedule] = useState(null);
+  const [activeSchedule, setActiveSchedule] = useState<string | null>(null);
   const [timeLineColor, setTimeLineColor] = useState<"green" | "red">("green");
 
   // 現在地の位置に基づいて線の色を更新する関数
