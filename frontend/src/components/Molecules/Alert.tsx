@@ -2,7 +2,7 @@ import React from "react";
 import Schedule from "@/components/Atoms/Schedule";
 import { Button } from "@/components/ui/button";
 
-export default function Alert({ onClose, onConfirm, schedule }) {
+export default function Alert({ onClose, onConfirm }) {
   return (
     <div className="flex w-full max-w-[327px] flex-col items-center gap-6 rounded border border-[#3F3F46] p-4 bg-white shadow-lg">
       <p className="font-sans text-[#3F3F46] text-[13px]">
