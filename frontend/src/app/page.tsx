@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Input } from "../components/Atoms/Input/input";
 import Header from "@/components/Atoms/Header";
@@ -5,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import TransportSelector from "@/components/Molecules/TransportSelector";
 import Day from "@/components/Atoms/Day";
 import Schedule from "@/components/Atoms/Schedule";
+import DepartureCard from "@/components/Molecules/DepartureCard";
+
+import Card from "@/components/Organisms/Card";
+// import InputPage from "@/Pages/InputPage";
 import Alert from "@/components/Molecules/Alert";
 
 const jsonData = {
@@ -19,6 +24,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 flex justify-center">
       <div className="w-full max-w-[768px] my-0 mx-[30px] bg-white">
         <Header text="計画" />
+        <Card />
         <main>
           <div className="p-4 flex flex-row gap-10">
             <Button variant="outline" className="w-[136px]">
@@ -29,7 +35,14 @@ export default function Home() {
           <div className="p-6">
             <TransportSelector />
           </div>
-
+          <div className="p-6 gap-6 flex flex-col">
+            <DepartureCard />
+            <DestinationCard />
+          </div>
+          <div className="p-6 gap-6 flex flex-col">
+            <Card />
+            {/* <InputPage /> */}
+          </div>
           <div className="p-6 gap-6 flex flex-col">
             <Schedule
               time={jsonData.time}
