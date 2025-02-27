@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from .serializers import PlaceNameSerializer
+from rest_framework import status, generics
+from .serializers import PlaceNameSerializer, TravelPlanSerializer
 from .serializers import TwoPlaceDistanceSerializer
 load_dotenv()
 
@@ -174,3 +174,13 @@ class TwoPlaceDistanceView(APIView):
             }
         except requests.exceptions.RequestException as e:
             return {"error": str(e)}
+
+
+class TravelPlanCreateView(APIView):
+    def post(self, request):
+        serializer = TravelPlanSerializer(data=request.data)
+
+        if serializer.is_valid():
+            travel_plan = serializer.save()
+            return Response({"id": travel_plan.id}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
