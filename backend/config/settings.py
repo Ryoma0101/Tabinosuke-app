@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 DEBUG = os.getenv('DJANGO_DEBUG')
 
 # テスト環境用のコード。本番時には取り替える様。
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(',')
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,two025-tabinosuke-dev.onrender.com').split(',')
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
