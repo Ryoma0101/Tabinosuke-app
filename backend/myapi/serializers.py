@@ -26,15 +26,17 @@ class FinalPointSerializer(serializers.ModelSerializer):
 
 
 class ViaPointSerializer(serializers.ModelSerializer):
+    plan = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = ViaPoint
-        fields = "__all__"
+        fields = ["plan", "location", "arrival_datetime", "priority", "departure_datetime", "travel_method_to_next"]
 
 
 class TravelPlanSerializer(serializers.ModelSerializer):
     start_point = StartPointSerializer()
     final_point = FinalPointSerializer()
-    via_points = ViaPointSerializer()
+    via_points = ViaPointSerializer(many=True)
 
     class Meta:
         model = TravelPlan
