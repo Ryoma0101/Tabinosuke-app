@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import TravelPlan, StartPoint, FinalPoint, ViaPoint
 
-
 class PlaceNameSerializer(serializers.Serializer):
     place_name = serializers.CharField()
     place_bias = serializers.CharField(required=False)
@@ -58,3 +57,10 @@ class TravelPlanSerializer(serializers.ModelSerializer):
             ViaPoint.objects.create(plan=travel_plan, **via_point_data)
 
         return travel_plan
+
+
+class ScheduleAdjustSerializer(serializers.Serializer):
+    schedule = TravelPlanSerializer()
+    now_time = serializers.DateTimeField()
+    passed_index = serializers.IntegerField()
+    delete = serializers.BooleanField()
