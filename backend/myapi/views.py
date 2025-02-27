@@ -5,9 +5,11 @@ from datetime import timedelta
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 from .serializers import PlaceNameSerializer, TravelPlanSerializer
 from .serializers import TwoPlaceDistanceSerializer
-from .serializers import ScheduleAdjustSerializer
+from .serializers import ScheduleAdjustSerializer, ViaPointSerializer
+from .models import TravelPlan, ViaPoint
 load_dotenv()
 
 
@@ -269,3 +271,22 @@ class ScheduleAdjustmentView(APIView):
 class HealthCheckView(APIView):
     def get(self, request, *args, **kwargs):
         return Response({"status": "healthy"})
+
+
+class LoadView(APIView):
+    def get(self, request, uuid, *args, **kwargs):
+        # `uuid` をそのまま使用して `get_object_or_404()` を実行
+        plan = get_object_or_404(TravelPlan, id=uuid)
+        travel_serializer = TravelPlanSerializer(plan)
+
+        # `ViaPoint` を取得（`plan` をキーにして検索し、`index` 順に並べる）
+        via_points = ViaPoint.objects.filter(plan=plan).order_by("index")
+
+        # `ViaPoint` をシリアライズ
+        via_serializer = ViaPointSerializer(via_points, many=True)
+
+        # `via_points` を `travel_serializer` のデータに追加
+        plan_data = travel_serializer.data
+        plan_data["via_points"] = via_serializer.data  # ✅ ここで追加
+
+        return Response(plan_data, status=status.HTTP_200_OK)
