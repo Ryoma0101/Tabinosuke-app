@@ -40,12 +40,14 @@ export default function ConfirmPage() {
             <Day day={1} date={new Date(2025, 1, 25)} />
             <div className="flex flex-col gap-11">
               <div onClick={() => handleScheduleClick("schedule1")}>
-                <Schedule
-                  time={new Date("2024-02-20T10:30:00")}
-                  route="東京駅"
-                  showCurrent={activeSchedule === "schedule1"}
-                  showPriority={false}
-                />
+              <Schedule
+                time={new Date("2024-02-20T10:30:00")}
+                route="東京駅"
+                priority="低" // 🔹 追加
+                showCurrent={activeSchedule === "schedule1"}
+                showPriority={false}
+              />
+
               </div>
               <ScheduleTransportation
                 time={new Date("2024-02-20T10:30:00")}
@@ -81,12 +83,14 @@ export default function ConfirmPage() {
                 transport="徒歩"
               />
               <div onClick={() => handleScheduleClick("schedule4")}>
-                <Schedule
-                  time={new Date("2024-02-20T14:30:00")}
-                  route="コスモワールド"
-                  showCurrent={activeSchedule === "schedule4"}
-                  showPriority={false}
-                />
+              <Schedule
+                time={new Date("2024-02-20T10:30:00")}
+                route="東京駅"
+                priority="低" // 🔹 追加
+                showCurrent={activeSchedule === "schedule1"}
+                showPriority={false}
+              />
+
               </div>
             </div>
             <div className="p-4 flex flex-row gap-10">
