@@ -15,13 +15,13 @@ export default function Alert({ onClose, onConfirm }: AlertProps) {
         スケジュールが押しています。以下の滞在時間を短縮しますか？
       </p>
       <div>
-        <Schedule
+        {/* <Schedule
           time={new Date("2024-02-20T10:30:00")}
           endTime={new Date("2024-02-20T11:30:00")}
           priority="低"
           route={"高須クリニック"}
           showCurrent={false}
-        />
+        /> */}
       </div>
       <div className="flex w-full justify-between gap-4">
         <Button variant="outline" className="w-[136px]" onClick={onClose}>
