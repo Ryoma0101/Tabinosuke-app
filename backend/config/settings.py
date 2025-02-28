@@ -36,6 +36,7 @@ CORS_ORIGIN_WHITELIST = [
     "http://localhost:3001",
     'http://localhost:3000',
     'https://two025-tabinosuke-dev.onrender.com',
+    "https://tabinosuke-app-test.vercel.app/"
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
