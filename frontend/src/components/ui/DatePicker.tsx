@@ -16,13 +16,8 @@ interface DatePickerDemoProps {
   onSelectDatetime: (datetime: string) => void;
 }
 
-export function DatePickerDemo({
-  value,
-  onSelectDatetime,
-}: DatePickerDemoProps) {
-  const [date, setDate] = useState<Date | undefined>(
-    value ? new Date(value) : undefined
-  );
+export function DatePickerDemo({ value, onSelectDatetime }: DatePickerDemoProps) {
+  const [date, setDate] = useState<Date | undefined>(value ? new Date(value) : undefined);
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     setDate(selectedDate);

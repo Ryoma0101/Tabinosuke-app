@@ -13,7 +13,6 @@ interface DepartureCardProps {
 
 const DepartureCard: React.FC<DepartureCardProps> = ({
   departure_datetime,
-  location,
   onSelectPlace,
   onSelectDatetime,
 }) => {
@@ -37,7 +36,7 @@ const DepartureCard: React.FC<DepartureCardProps> = ({
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           場所
         </p>
-        <PlaceInput value={location || ""} onSelectPlace={onSelectPlace} />
+        <PlaceInput onSelect={onSelectPlace} />
       </div>
       <div>
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">

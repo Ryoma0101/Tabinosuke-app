@@ -5,20 +5,19 @@ import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PlaceInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  onSelectPlace?: (place: string) => void;
+  onSelect: (place: string) => void;
 }
 
 const PlaceInput = React.forwardRef<HTMLInputElement, PlaceInputProps>(
-  ({ className = "", type, onSelectPlace, ...props }, ref) => {
-    const [query, setQuery] = useState("");
+  ({ className = "", type, value, onSelect, ...props }, ref) => {
+    const [query, setQuery] = useState(value || "");
     const [results, setResults] = useState<string[]>([]);
-    const [selectedPlace, setSelectedPlace] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-      if (query.trim() === "") {
+      if (typeof query === "string" && query.trim() === "") {
         setResults([]);
         return;
       }
@@ -70,16 +69,13 @@ const PlaceInput = React.forwardRef<HTMLInputElement, PlaceInputProps>(
     }, [query]);
 
     const handleSelectPlace = (place: string) => {
-      setSelectedPlace(place);
+      setQuery(place);
       setResults([]);
-      if (onSelectPlace) {
-        onSelectPlace(place);
-      }
+      onSelect(place);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(e.target.value);
-      setSelectedPlace(null);
     };
 
     return (
@@ -93,7 +89,7 @@ const PlaceInput = React.forwardRef<HTMLInputElement, PlaceInputProps>(
               className
             )}
             ref={ref}
-            value={selectedPlace || query}
+            value={query}
             onChange={handleInputChange}
             {...props}
           />
