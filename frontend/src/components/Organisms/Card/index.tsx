@@ -12,6 +12,10 @@ const initialVias: number[] = [];
 
 const Card: React.FC = () => {
   const [ViaList, setViaList] = useState(initialVias);
+  const [departureDatetime, setDepartureDatetime] = useState<string | null>(
+    null
+  );
+  const [location, setLocation] = useState<string | null>(null);
 
   const onRemoveTaskButtonClick = (index: number) => {
     const updatedViaList = ViaList.filter((_, i) => i !== index);
@@ -29,7 +33,12 @@ const Card: React.FC = () => {
         <Input />
       </div>
       <div>
-        <DepartureCard />
+        <DepartureCard
+          departure_datetime={departureDatetime}
+          location={location}
+          onSelectPlace={setLocation}
+          onSelectDatetime={setDepartureDatetime}
+        />
       </div>
       <TransportSelector />
       <div className="flex flex-col gap-[52px]">
