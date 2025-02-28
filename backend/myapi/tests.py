@@ -202,7 +202,52 @@ class APITests(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_save_api(self):
+    def test_schedule_adjustment_by_id_api(self):
+        # Setup test data
+        via_point1 = ViaPoint.objects.create(
+            index=1,
+            plan=self.travel_plan,
+            location="名古屋駅",
+            arrival_datetime=self.now + timedelta(hours=1),
+            priority="high",
+            departure_datetime=self.now + timedelta(hours=2),
+            travel_method_to_next="電車"
+        )
+
+        via_point2 = ViaPoint.objects.create(
+            index=2,
+            plan=self.travel_plan,
+            location="京都駅",
+            arrival_datetime=self.now + timedelta(hours=2),
+            priority="medium",
+            departure_datetime=self.now + timedelta(hours=2, minutes=30),
+            travel_method_to_next="電車"
+        )
+
+        # Prepare request data
+        data = {
+            "id": str(self.travel_plan.id),
+            "passed_index": 0,
+            "now_time": (self.now + timedelta(minutes=30)).isoformat()
+        }
+
+        # Send POST request to the schedule adjustment by ID endpoint
+        response = self.client.post(
+            reverse('schedule_by_id'),
+            data,
+            content_type='application/json'
+        )
+
+        # Check the response status code
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Verify the response contains the expected travel plan ID
+        self.assertEqual(str(response.data["id"]), str(self.travel_plan.id))
+
+        # Remove unused variables
+        del via_point1, via_point2
+
+    def test_load_api(self):
         url = reverse("load", kwargs={"uuid": self.travel_plan.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

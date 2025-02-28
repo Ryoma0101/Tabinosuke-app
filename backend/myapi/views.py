@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 import requests
-from datetime import timedelta
+from datetime import timedelta, datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from .serializers import PlaceNameSerializer, TravelPlanSerializer
 from .serializers import TwoPlaceDistanceSerializer
 from .serializers import ScheduleAdjustSerializer, ViaPointSerializer
+from .serializers import ScheduleAdjustByIdSerializer
 from .models import TravelPlan, ViaPoint
 load_dotenv()
 
@@ -206,16 +207,18 @@ class ScheduleAdjustmentView(APIView):
                 return Response(response_data, status=status.HTTP_200_OK)
 
             # passed_index以降のviaPointsを取得
-            remaining_points = [p for p in schedule["via_points"] if p["index"] > passed_index]
+            remaining_points = [p for p in schedule["via_points"] if p.index > passed_index]
 
             # 各ポイントの持ち時間を計算
             point_durations = []
             for point in remaining_points:
-                duration = point["departure_datetime"] - point["arrival_datetime"]
+                arrival_datetime = point.arrival_datetime
+                departure_datetime = point.departure_datetime
+                duration = departure_datetime - arrival_datetime
                 point_durations.append({
-                    "index": point["index"],
+                    "index": point.index,
                     "duration": duration,
-                    "priority": point.get("priority", 1),
+                    "priority": getattr(point, "priority", 1),
                     "max_delay": duration.total_seconds() * 0.3  # 30%制限
                 })
 
@@ -244,13 +247,13 @@ class ScheduleAdjustmentView(APIView):
                     total_delay -= allocated_delay
 
                     # スケジュールの更新
-                    target_point = [p for p in remaining_points if p["index"] == point["index"]][0]
-                    new_departure = target_point["departure_datetime"] - timedelta(seconds=allocated_delay)
-                    target_point["departure_datetime"] = new_departure
+                    target_point = [p for p in remaining_points if p.index == point["index"]][0]
+                    new_departure = target_point.departure_datetime - timedelta(seconds=allocated_delay)
+                    target_point.departure_datetime = new_departure
 
             # 修正したスケジュールを作成
             fixed_schedule = schedule.copy()
-            fixed_schedule["via_points"] = [p for p in schedule["via_points"] if p["index"] <= passed_index] + remaining_points
+            fixed_schedule["via_points"] = [p for p in schedule["via_points"] if p.index <= passed_index] + remaining_points
 
             # 短縮時間と余った遅延時間を計算
             total_shortened = sum([-delay for delay in separated_delay.values()])
@@ -266,6 +269,111 @@ class ScheduleAdjustmentView(APIView):
             return Response(response_data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ScheduleAdjustByIdView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = ScheduleAdjustByIdSerializer(data=request.data)
+        if serializer.is_valid():
+            id = serializer.validated_data['id']
+
+            # TravelPlanを取得
+            travel_plan = get_object_or_404(TravelPlan, id=id)
+            travel_plan_data = TravelPlanSerializer(travel_plan).data
+
+            # スケジュールデータを取得
+            schedule = travel_plan_data
+            via_points = ViaPoint.objects.filter(plan=travel_plan).all()
+            schedule["via_points"] = list(via_points)
+            passed_index = request.data.get('passed_index', 0)
+            now_time_str = request.data.get('now_time')
+            not_passed_index = passed_index + 1
+
+            print(now_time_str)
+            # now_timeをdatetimeに変換
+            try:
+                now_time = datetime.fromisoformat(now_time_str)
+            except (TypeError, ValueError):
+                return Response({"error": "Invalid now_time format"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # locate_returnが見つからない場合の処理を追加
+            locate_return = next((vp for vp in schedule["via_points"] if vp.index == not_passed_index), None)
+            if not locate_return:
+                return Response({"error": "Invalid index for locate_return"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # arrival_datetimeをdatetimeに変換
+            print(f"arrival_datetime before conversion: {locate_return.arrival_datetime}")
+            arrival_datetime = locate_return.arrival_datetime
+
+            delay = now_time - arrival_datetime
+            if delay.total_seconds() <= 0:
+                # 遅延がない場合でも、スケジュール情報を含むレスポンスを返す
+                return Response({"id": travel_plan.id}, status=status.HTTP_200_OK)
+
+            # passed_index以降のviaPointsを取得
+            remaining_points = [p for p in schedule["via_points"] if p.index > passed_index]
+
+            # 各ポイントの持ち時間を計算
+            point_durations = []
+            for point in remaining_points:
+                arrival_datetime = point.arrival_datetime
+                departure_datetime = point.departure_datetime
+                duration = departure_datetime - arrival_datetime
+                point_durations.append({
+                    "index": point.index,
+                    "duration": duration,
+                    "priority": getattr(point, "priority", 1),
+                    "max_delay": duration.total_seconds() * 0.3  # 30%制限
+                })
+
+            # 優先度でグループ化
+            priority_groups = {}
+            for pd in point_durations:
+                if pd["priority"] not in priority_groups:
+                    priority_groups[pd["priority"]] = []
+                priority_groups[pd["priority"]].append(pd)
+
+            # 遅延を分配
+            total_delay = delay.total_seconds()
+            separated_delay = {}
+
+            # 優先度の低い順に遅延を分配
+            for priority in sorted(priority_groups.keys(), reverse=True):
+                group = priority_groups[priority]
+                group_delay = total_delay / len(remaining_points)
+
+                for point in group:
+                    # 各ポイントに割り当てる遅延時間を計算
+                    allocated_delay = min(group_delay, point["max_delay"])
+                    # 滞在時間から遅延時間を引く (マイナスの遅延 = 滞在時間の短縮)
+                    separated_delay[point["index"]] = -allocated_delay
+                    total_delay -= allocated_delay
+
+                    # スケジュールの更新
+                    target_point = [p for p in remaining_points if p.index == point["index"]][0]
+                    new_departure = target_point.departure_datetime - timedelta(seconds=allocated_delay)
+                    target_point.departure_datetime = new_departure
+
+            # 修正したスケジュールを作成
+            fixed_schedule = schedule.copy()
+            fixed_schedule["via_points"] = [p for p in schedule["via_points"] if p.index <= passed_index] + remaining_points
+
+            # データベースに保存
+            for vp_data in fixed_schedule["via_points"]:
+                vp_instance = get_object_or_404(ViaPoint, id=vp_data.id)
+                vp_instance.departure_datetime = vp_data.departure_datetime
+                vp_instance.save()
+
+            # Sort via_points by arrival_datetime
+            sorted_via_points = sorted(via_points, key=lambda vp: vp.arrival_datetime)
+
+            # Reassign index based on sorted order
+            for new_index, vp in enumerate(sorted_via_points, start=1):
+                vp.index = new_index
+                vp.save()
+
+            return Response({"id": travel_plan.id}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class HealthCheckView(APIView):
