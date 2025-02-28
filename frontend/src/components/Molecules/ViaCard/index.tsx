@@ -64,7 +64,7 @@ const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
             <input
               type="time"
               onClick={handleClick}
-              className="pl-10 h-10 w-full rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="w-[102px] h-[43px] pl-10 h-10 w-full rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-offset-2"
             />
             <style jsx>{`
               input[type="time"]::-webkit-calendar-picker-indicator {
