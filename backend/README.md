@@ -176,11 +176,10 @@ DockerとDocker-composeを、以下のサイトを参考にして、インスト
 
 ## シリアライザー
 
-Django REST Frameworkのシリアライザーを使用して、モデルデータをJSON形式に変換します。これにより、APIのリクエストやレスポンスでデータを簡単に操作できます。
 
 ### シリアライザーの例
 
-以下は、`TravelPlan`モデルのシリアライザーの例です。
+`TravelPlan`モデルのシリアライザーの例
 
 ```python
 from rest_framework import serializers
