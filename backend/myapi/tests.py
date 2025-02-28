@@ -4,7 +4,6 @@ from rest_framework import status
 from datetime import timedelta
 from django.utils import timezone
 from .models import StartPoint, FinalPoint, TravelPlan, ViaPoint
-import uuid
 
 
 class ModelTests(TestCase):

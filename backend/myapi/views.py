@@ -276,11 +276,11 @@ class ScheduleAdjustByIdView(APIView):
         serializer = ScheduleAdjustByIdSerializer(data=request.data)
         if serializer.is_valid():
             id = serializer.validated_data['id']
-            
+
             # TravelPlanを取得
             travel_plan = get_object_or_404(TravelPlan, id=id)
             travel_plan_data = TravelPlanSerializer(travel_plan).data
-            
+
             # スケジュールデータを取得
             schedule = travel_plan_data
             via_points = ViaPoint.objects.filter(plan=travel_plan).all()
@@ -288,7 +288,7 @@ class ScheduleAdjustByIdView(APIView):
             passed_index = request.data.get('passed_index', 0)
             now_time_str = request.data.get('now_time')
             not_passed_index = passed_index + 1
-            
+
             print(now_time_str)
             # now_timeをdatetimeに変換
             try:
