@@ -22,7 +22,7 @@ export default function Schedule({
   // 時刻のフォーマット関数
   const formatTime = (date: Date) => {
     if (!(date instanceof Date) || isNaN(date.getTime())) {
-      return "Invalid Date";
+      return "";
     }
     return date
       .toLocaleTimeString("ja-JP", {
@@ -44,13 +44,11 @@ export default function Schedule({
   return (
     <div className="flex justify-between items-center w-[330px] font-sans gap-[39px] p-0 m-0">
       <div className="flex flex-col items-center text-[13px] text-[#666666] font-normal leading-normal w-24 pl-2 whitespace-nowrap">
-        <div>{formatTime(departure_datetime)}</div>
-        {arrival_datetime && (
-          <>
-            <span className="inline-block transform rotate-90">~</span>
-            <div>{formatTime(arrival_datetime)}</div>
-          </>
+        {arrival_datetime && <div>{formatTime(arrival_datetime)}</div>}
+        {arrival_datetime && departure_datetime && (
+          <span className="inline-block transform rotate-90">~</span>
         )}
+        {departure_datetime && <div>{formatTime(departure_datetime)}</div>}
       </div>
 
       <div className="flex flex-col flex-1 gap-3">
