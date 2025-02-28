@@ -201,3 +201,7 @@ class APITests(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_save_api(self):
+        response = self.client.get(self.travel_plan.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
