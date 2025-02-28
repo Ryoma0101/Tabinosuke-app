@@ -8,18 +8,57 @@ import AddViaButton from "@/components/Atoms/AddViaButton";
 import { Input } from "@/components/Atoms/Input";
 import TransportSelector from "@/components/Molecules/TransportSelector";
 
-const initialVias: number[] = [];
+const initialVias: any[] = [];
 
 const Card: React.FC = () => {
-  const [ViaList, setViaList] = useState(initialVias);
+  const [viaList, setViaList] = useState(initialVias);
+  const [departureDatetime, setDepartureDatetime] = useState<string | null>(
+    null
+  );
+  const [location, setLocation] = useState<string | null>(null);
 
   const onRemoveTaskButtonClick = (index: number) => {
-    const updatedViaList = ViaList.filter((_, i) => i !== index);
+    const updatedViaList = viaList.filter((_, i) => i !== index);
     setViaList(updatedViaList);
   };
 
   const onAddViaButtonClick = () => {
-    setViaList([...ViaList, ViaList.length + 1]);
+    setViaList([
+      ...viaList,
+      {
+        arrivalDatetime: null,
+        departureDatetime: null,
+        location: null,
+        priority: "",
+      },
+    ]);
+  };
+
+  const handleSelectPlace = (index: number, place: string) => {
+    const updatedViaList = [...viaList];
+    updatedViaList[index].location = place;
+    setViaList(updatedViaList);
+  };
+
+  const handleSelectArrivalDatetime = (index: number, datetime: string) => {
+    const updatedViaList = [...viaList];
+    updatedViaList[index].arrivalDatetime = datetime;
+    setViaList(updatedViaList);
+  };
+
+  const handleSelectDepartureDatetime = (index: number, datetime: string) => {
+    const updatedViaList = [...viaList];
+    updatedViaList[index].departureDatetime = datetime;
+    setViaList(updatedViaList);
+  };
+
+  const handleSelectPriority = (
+    index: number,
+    priority: "低" | "中" | "高"
+  ) => {
+    const updatedViaList = [...viaList];
+    updatedViaList[index].priority = priority;
+    setViaList(updatedViaList);
   };
 
   return (
@@ -29,14 +68,33 @@ const Card: React.FC = () => {
         <Input />
       </div>
       <div>
-        <DepartureCard />
+        <DepartureCard
+          departure_datetime={departureDatetime}
+          location={location}
+          onSelectPlace={setLocation}
+          onSelectDatetime={setDepartureDatetime}
+        />
       </div>
       <TransportSelector />
       <div className="flex flex-col gap-[52px]">
-        {ViaList.map((_, index) => (
+        {viaList.map((via, index) => (
           <ViaCard
             key={index}
             onRemove={() => onRemoveTaskButtonClick(index)}
+            arrivalDatetime={via.arrivalDatetime}
+            departureDatetime={via.departureDatetime}
+            location={via.location}
+            onSelectPlace={(place) => handleSelectPlace(index, place)}
+            onSelectArrivalDatetime={(datetime) =>
+              handleSelectArrivalDatetime(index, datetime)
+            }
+            onSelectDepartureDatetime={(datetime) =>
+              handleSelectDepartureDatetime(index, datetime)
+            }
+            priority={via.priority}
+            onSelectPriority={(priority) =>
+              handleSelectPriority(index, priority)
+            }
           />
         ))}
         <AddViaButton onClick={onAddViaButtonClick} />

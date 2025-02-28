@@ -13,12 +13,40 @@ import {
 import TransportSelector from "../TransportSelector";
 
 interface ViaCardProps {
+  arrivalDatetime: string | null;
+  departureDatetime: string | null;
+  location: string | null;
+  onSelectPlace: (place: string) => void;
+  onSelectArrivalDatetime: (datetime: string) => void;
+  onSelectDepartureDatetime: (datetime: string) => void;
   onRemove: () => void;
+  priority: "低" | "中" | "高";
+  onSelectPriority: (priority: "低" | "中" | "高") => void;
 }
 
-const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
+const ViaCard: React.FC<ViaCardProps> = ({
+  onRemove,
+  arrivalDatetime,
+  departureDatetime,
+  location,
+  onSelectPlace,
+  onSelectArrivalDatetime,
+  onSelectDepartureDatetime,
+  priority,
+  onSelectPriority,
+}) => {
   const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
     event.currentTarget.showPicker();
+  };
+
+  const handleArrivalTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onSelectArrivalDatetime(e.target.value);
+  };
+
+  const handleDepartureTimeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    onSelectDepartureDatetime(e.target.value);
   };
 
   return (
@@ -49,20 +77,25 @@ const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
         <p className="text-[#3F3F46] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           場所
         </p>
-        <PlaceInput />
+        <PlaceInput onSelect={onSelectPlace} />
       </div>
       <div className="mb-[16px]">
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           到着時間目安
         </p>
         <div className="flex space-x-4 mb-[16px]">
-          <DatePickerDemo />
+          <DatePickerDemo
+            value={arrivalDatetime || ""}
+            onSelectDatetime={onSelectArrivalDatetime}
+          />
           <div className="relative flex items-center w-[102px] h-[43px]">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
               <Clock4 className="h-5 w-5 text-gray-400" />
             </span>
             <input
               type="time"
+              value={arrivalDatetime || ""}
+              onChange={handleArrivalTimeChange}
               onClick={handleClick}
               className="pl-10 h-10 w-full rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-offset-2"
             />
@@ -81,9 +114,9 @@ const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           優先度
         </p>
-        <Select>
+        <Select onValueChange={onSelectPriority}>
           <SelectTrigger className="w-[86px]">
-            <SelectValue placeholder="ー" />
+            <SelectValue placeholder={priority || "ー"} />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="高">高</SelectItem>
@@ -97,13 +130,18 @@ const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
           出発時間目安
         </p>
         <div className="flex space-x-[16px] mb-10">
-          <DatePickerDemo />
+          <DatePickerDemo
+            value={departureDatetime || ""}
+            onSelectDatetime={onSelectDepartureDatetime}
+          />
           <div className="relative flex items-center w-[102px] h-[43px]">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
               <Clock4 className="h-5 w-5 text-gray-400" />
             </span>
             <input
               type="time"
+              value={departureDatetime || ""}
+              onChange={handleDepartureTimeChange}
               onClick={handleClick}
               className="pl-10 h-10 w-full rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-offset-2"
             />
