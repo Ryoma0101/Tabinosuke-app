@@ -1,0 +1,41 @@
+# docker compose fileのバージョン
+# version: "3.8"
+
+services:
+  # データベース用のコンテナ
+  postgres:
+    image: postgres:14
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - webnet
+
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile.django.dev
+    container_name: django
+    command: ["bash", "-c", "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000 && python manage.py createsuperuser --noinput"]
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge

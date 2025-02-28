@@ -1,0 +1,30 @@
+FROM python:3.11-slim-bullseye
+
+# システムの依存関係をインストール
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    git \
+    postgresql-client \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip
+
+WORKDIR /TABINOSUKE-APP
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
+
+COPY . /TABINOSUKE-APP/
+
+# ヘルスチェックの設定
+HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD pg_isready -U ${DB_USER} -h postgres || exit 1
+
+# デフォルトのコマンド
+CMD ["bash", "-c", "python manage.py makemigrations myapi && python manage.py migrate && python manage.py createsuperuser --noinput && python manage.py runserver 0.0.0.0:8000"]
+
+# ポートの設定
+EXPOSE 8000
+
+# 環境変数の設定
+ENV PYTHONUNBUFFERED=1
