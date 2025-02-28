@@ -203,5 +203,6 @@ class APITests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_save_api(self):
-        response = self.client.get(self.travel_plan.id)
+        url = reverse("load", kwargs={"uuid": self.travel_plan.id})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
