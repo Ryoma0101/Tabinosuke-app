@@ -10,6 +10,7 @@ const PlaceInput = React.forwardRef<
 >(({ className = "", type, ...props }, ref) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<string[]>([]);
+  const [selectedPlace, setSelectedPlace] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -29,7 +30,7 @@ const PlaceInput = React.forwardRef<
       setError(null);
       try {
         const response = await fetch(
-          `https://two025-tabinosuke-dev.onrender.com/api/search-placename/?format=api`,
+          `https://two025-tabinosuke-dev.onrender.com/api/search-placename/`,
           {
             method: "POST",
             headers: {
@@ -66,6 +67,16 @@ const PlaceInput = React.forwardRef<
     };
   }, [query]);
 
+  const handleSelectPlace = (place: string) => {
+    setSelectedPlace(place);
+    setResults([]);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    setSelectedPlace(null);
+  };
+
   return (
     <div className="relative flex flex-col items-center w-[318px] h-auto">
       <div className="relative flex items-center w-full h-[42px]">
@@ -77,8 +88,8 @@ const PlaceInput = React.forwardRef<
             className
           )}
           ref={ref}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={selectedPlace || query}
+          onChange={handleInputChange}
           {...props}
         />
       </div>
@@ -86,7 +97,11 @@ const PlaceInput = React.forwardRef<
       {error && <p className="text-red-500">{error}</p>}
       <ul className="mt-2 w-full">
         {results.map((location, index) => (
-          <li key={index} className="p-2 border-b border-gray-300">
+          <li
+            key={index}
+            className="p-2 border-b border-gray-300 cursor-pointer"
+            onClick={() => handleSelectPlace(location)}
+          >
             {location}
           </li>
         ))}
