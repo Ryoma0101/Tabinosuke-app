@@ -65,3 +65,7 @@ class ScheduleAdjustSerializer(serializers.Serializer):
     now_time = serializers.DateTimeField()
     passed_index = serializers.IntegerField()
     delete = serializers.BooleanField()
+
+
+class ScheduleAdjustByIdSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
