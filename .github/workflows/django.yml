@@ -2,9 +2,13 @@ name: DRF CI
 
 on:
   pull_request:
-    branches: [ "backend" ]
+    branches:
+      - "backend"
+      - main
   push:
-    branches: [ "backend" ]
+    branches:
+      - "backend"
+      - main
 
 jobs:
   test:
