@@ -8,3 +8,4 @@ psycopg2==2.9.6
 social-auth-app-django==5.4.1
 django-filter==23.2
 python-dotenv==1.0.1
+django-cors-headers==4.0.0
