@@ -289,7 +289,6 @@ class ScheduleAdjustByIdView(APIView):
             now_time_str = request.data.get('now_time')
             not_passed_index = passed_index + 1
 
-            print(now_time_str)
             # now_timeをdatetimeに変換
             try:
                 now_time = datetime.fromisoformat(now_time_str)
@@ -300,14 +299,12 @@ class ScheduleAdjustByIdView(APIView):
             locate_return = next((vp for vp in schedule["via_points"] if vp.index == not_passed_index), None)
             if not locate_return:
                 return Response({"error": "Invalid index for locate_return"}, status=status.HTTP_400_BAD_REQUEST)
-
+            
             # arrival_datetimeをdatetimeに変換
-            print(f"arrival_datetime before conversion: {locate_return.arrival_datetime}")
             arrival_datetime = locate_return.arrival_datetime
-
+            
             delay = now_time - arrival_datetime
             if delay.total_seconds() <= 0:
-                # 遅延がない場合でも、スケジュール情報を含むレスポンスを返す
                 return Response({"id": travel_plan.id}, status=status.HTTP_200_OK)
 
             # passed_index以降のviaPointsを取得
@@ -372,6 +369,7 @@ class ScheduleAdjustByIdView(APIView):
                 vp.index = new_index
                 vp.save()
 
+            # Return the id of the updated TravelPlan
             return Response({"id": travel_plan.id}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
