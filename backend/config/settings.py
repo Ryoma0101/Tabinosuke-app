@@ -32,13 +32,6 @@ DEBUG = os.getenv('DJANGO_DEBUG')
 # テスト環境用のコード。本番時には取り替える様。
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(',')
 
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3001",
-    'http://localhost:3000',
-    'https://two025-tabinosuke-dev.onrender.com',
-    "https://tabinosuke-app-test.vercel.app/"
-]
-
 CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_CREDENTIALS = True
@@ -64,12 +57,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "myapi"
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
