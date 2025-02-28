@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import Day from "@/components/Atoms/Day";
+// import Day from "@/components/Atoms/Day";
 import Header from "@/components/Atoms/Header";
 import Schedule from "@/components/Atoms/Schedule";
 import ScheduleTransportation from "@/components/Atoms/ScheculeTransportation";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";  // named import
 import CurrentTimeLine from "@/components/Atoms/currentTineLine";
 
 interface ScheduleData {
@@ -41,7 +41,19 @@ export default function ConfirmPage() {
   const [timeLineColor, setTimeLineColor] = useState<"green" | "red">("green");
   const [scheduleData, setScheduleData] = useState<ScheduleData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
+  // マウント時に10分ごとに現在時刻を更新するタイマーをセット
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      const now = new Date();
+      setCurrentTime(now);
+      updateTimeLineColor();
+    }, 10 * 60 * 1000);
+    return () => clearInterval(timerId);
+  }, []);
+
+  // uuid がある場合にスケジュールデータを取得
   useEffect(() => {
     if (uuid) {
       fetchScheduleData(uuid);
@@ -57,7 +69,7 @@ export default function ConfirmPage() {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -65,26 +77,39 @@ export default function ConfirmPage() {
       const data: ScheduleData = await response.json();
       setScheduleData(data);
       setError(null);
+      updateTimeLineColor(data);
     } catch (error) {
       console.error("データの取得に失敗しました", error);
       setError("データの取得に失敗しました。UUIDを確認してください。");
     }
   };
 
-  const updateTimeLineColor = (scheduleId: string) => {
-    const schedulesBefore = ["schedule1"];
-    const schedulesAfter = ["schedule2", "schedule3", "schedule4"];
-
-    if (schedulesBefore.includes(scheduleId)) {
-      setTimeLineColor("green");
-    } else if (schedulesAfter.includes(scheduleId)) {
+  const updateTimeLineColor = (data?: ScheduleData) => {
+    const schedule = data || scheduleData;
+    if (!schedule) return;
+    if (new Date(schedule.start_point.departure_datetime) > currentTime) {
       setTimeLineColor("red");
+    } else {
+      setTimeLineColor("green");
     }
   };
 
   const handleScheduleClick = (scheduleId: string) => {
     setActiveSchedule(scheduleId);
-    updateTimeLineColor(scheduleId);
+    updateTimeLineColor();
+  };
+
+  // シェアボタンがクリックされたとき、URL をクリップボードにコピー
+  const handleShareClick = () => {
+    if (!uuid) return;
+    const shareUrl = `https://tabinosuke-app-test.vercel.app/confirm?uuid=${uuid}/`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        alert("URLがコピーされました！");
+      })
+      .catch((err) => {
+        console.error("URLのコピーに失敗しました: ", err);
+      });
   };
 
   if (!scheduleData) {
@@ -100,13 +125,13 @@ export default function ConfirmPage() {
     <main className="min-h-screen flex justify-center items-center bg-gray-100">
       <div className="w-full max-w-[585.6px] mx-auto bg-white shadow-md rounded-lg px-8 py-6 gap-8">
         <Header text="スケジュール確認" />
-        <Day day={1} date={new Date(2025, 1, 25)} />
+        {/* <Day day={1} date={new Date(2025, 1, 25)} /> */}
         <div className="flex flex-col gap-11 items-center">
           <div onClick={() => handleScheduleClick("schedule1")}>
             <Schedule
               departure_datetime={new Date(scheduleData.start_point.departure_datetime)}
               route={scheduleData.start_point.location}
-              priority="低"  // 適切な値に変更
+              priority="低"
               showCurrent={activeSchedule === "schedule1"}
               showPriority={false}
             />
@@ -132,7 +157,7 @@ export default function ConfirmPage() {
             <Schedule
               arrival_datetime={new Date(scheduleData.final_point.arrival_datetime)}
               route={scheduleData.final_point.location}
-              priority="低"  // 適切な値に変更
+              priority="低"
               showCurrent={activeSchedule === "scheduleFinal"}
               showPriority={false}
             />
@@ -142,7 +167,9 @@ export default function ConfirmPage() {
           <Button variant="outline" className="w-[136px]">
             修正する
           </Button>
-          <Button className="w-[136px] bg-[#3f3f46]">シェアする</Button>
+          <Button className="w-[136px] bg-[#3f3f46]" onClick={handleShareClick}>
+            シェアする
+          </Button>
         </div>
       </div>
     </main>
