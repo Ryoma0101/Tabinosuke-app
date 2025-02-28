@@ -248,7 +248,7 @@ class APITests(TestCase):
         # Remove unused variables
         del via_point1, via_point2
 
-    def test_save_api(self):
+    def test_load_api(self):
         url = reverse("load", kwargs={"uuid": self.travel_plan.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
