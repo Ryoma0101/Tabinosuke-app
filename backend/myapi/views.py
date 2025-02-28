@@ -299,10 +299,10 @@ class ScheduleAdjustByIdView(APIView):
             locate_return = next((vp for vp in schedule["via_points"] if vp.index == not_passed_index), None)
             if not locate_return:
                 return Response({"error": "Invalid index for locate_return"}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             # arrival_datetimeをdatetimeに変換
             arrival_datetime = locate_return.arrival_datetime
-            
+
             delay = now_time - arrival_datetime
             if delay.total_seconds() <= 0:
                 return Response({"id": travel_plan.id}, status=status.HTTP_200_OK)
