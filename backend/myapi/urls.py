@@ -9,7 +9,7 @@ urlpatterns = [
     path('two-place-distance/', TwoPlaceDistanceView.as_view(), name='distance'),
     path('save/', TravelPlanCreateView.as_view(), name='travel_plan'),
     path('schedule-adjustment-old/', ScheduleAdjustmentView.as_view(), name='schedule'),
-    path('schedule-adjustment/', ScheduleAdjustByIdView.as_view(), name='schedule_by_id'),
+    path('schedule-adjust/', ScheduleAdjustByIdView.as_view(), name='schedule_by_id'),
     path('api/health/', HealthCheckView.as_view(), name='health_check'),
     path('load/<uuid:uuid>/', LoadView.as_view(), name='load')
 ]
