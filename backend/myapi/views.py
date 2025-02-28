@@ -303,6 +303,7 @@ class ScheduleAdjustByIdView(APIView):
             # arrival_datetimeをdatetimeに変換
             arrival_datetime = locate_return.arrival_datetime
 
+            # Calculate delay
             delay = now_time - arrival_datetime
             if delay.total_seconds() <= 0:
                 return Response({"id": travel_plan.id}, status=status.HTTP_200_OK)
@@ -310,64 +311,30 @@ class ScheduleAdjustByIdView(APIView):
             # passed_index以降のviaPointsを取得
             remaining_points = [p for p in schedule["via_points"] if p.index > passed_index]
 
-            # 各ポイントの持ち時間を計算
-            point_durations = []
-            for point in remaining_points:
-                arrival_datetime = point.arrival_datetime
-                departure_datetime = point.departure_datetime
-                duration = departure_datetime - arrival_datetime
-                point_durations.append({
-                    "index": point.index,
-                    "duration": duration,
-                    "priority": getattr(point, "priority", 1),
-                    "max_delay": duration.total_seconds() * 0.3  # 30%制限
-                })
+            # Adjust arrival time of the first point after the current time
+            first_point = remaining_points[0]
+            first_point.arrival_datetime = now_time
 
-            # 優先度でグループ化
-            priority_groups = {}
-            for pd in point_durations:
-                if pd["priority"] not in priority_groups:
-                    priority_groups[pd["priority"]] = []
-                priority_groups[pd["priority"]].append(pd)
+            # Calculate new departure times by compressing stay durations
+            for i, point in enumerate(remaining_points):
+                if i == 0:
+                    continue  # Skip the first point as its arrival is already adjusted
 
-            # 遅延を分配
-            total_delay = delay.total_seconds()
-            separated_delay = {}
+                previous_point = remaining_points[i - 1]
+                travel_time = point.arrival_datetime - previous_point.departure_datetime
+                max_stay_duration = point.departure_datetime - point.arrival_datetime
+                compressed_stay_duration = max_stay_duration * 0.7  # Compress stay duration by 30%
 
-            # 優先度の低い順に遅延を分配
-            for priority in sorted(priority_groups.keys(), reverse=True):
-                group = priority_groups[priority]
-                group_delay = total_delay / len(remaining_points)
+                # Update arrival and departure times
+                point.arrival_datetime = previous_point.departure_datetime + travel_time
+                point.departure_datetime = point.arrival_datetime + compressed_stay_duration
 
-                for point in group:
-                    # 各ポイントに割り当てる遅延時間を計算
-                    allocated_delay = min(group_delay, point["max_delay"])
-                    # 滞在時間から遅延時間を引く (マイナスの遅延 = 滞在時間の短縮)
-                    separated_delay[point["index"]] = -allocated_delay
-                    total_delay -= allocated_delay
-
-                    # スケジュールの更新
-                    target_point = [p for p in remaining_points if p.index == point["index"]][0]
-                    new_departure = target_point.departure_datetime - timedelta(seconds=allocated_delay)
-                    target_point.departure_datetime = new_departure
-
-            # 修正したスケジュールを作成
-            fixed_schedule = schedule.copy()
-            fixed_schedule["via_points"] = [p for p in schedule["via_points"] if p.index <= passed_index] + remaining_points
-
-            # データベースに保存
-            for vp_data in fixed_schedule["via_points"]:
+            # Save the updated schedule
+            for vp_data in remaining_points:
                 vp_instance = get_object_or_404(ViaPoint, id=vp_data.id)
+                vp_instance.arrival_datetime = vp_data.arrival_datetime
                 vp_instance.departure_datetime = vp_data.departure_datetime
                 vp_instance.save()
-
-            # Sort via_points by arrival_datetime
-            sorted_via_points = sorted(via_points, key=lambda vp: vp.arrival_datetime)
-
-            # Reassign index based on sorted order
-            for new_index, vp in enumerate(sorted_via_points, start=1):
-                vp.index = new_index
-                vp.save()
 
             # Return the id of the updated TravelPlan
             return Response({"id": travel_plan.id}, status=status.HTTP_200_OK)
