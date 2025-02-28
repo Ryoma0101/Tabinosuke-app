@@ -124,7 +124,6 @@ export default function ConfirmPage() {
     setShowAlert(false);
   };
 
-  // 日時を指定された形式に変換する関数（例："2025-02-28T12:30:00"）
   const formatDateToISOString = (date: Date) => {
     const pad = (num: number) => String(num).padStart(2, "0");
     const year = date.getUTCFullYear();
