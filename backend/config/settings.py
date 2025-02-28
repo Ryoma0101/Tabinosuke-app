@@ -45,6 +45,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 # CSRFの設定
 CSRF_TRUSTED_ORIGINS = [
+    "https://tabinosuke-app-test.vercel.app/",
+    "http://localhost:3001",
     'https://two025-tabinosuke-dev.onrender.com',
     'http://localhost:3000',
 ]
