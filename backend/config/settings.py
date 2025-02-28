@@ -33,6 +33,7 @@ DEBUG = os.getenv('DJANGO_DEBUG')
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS').split(',')
 
 CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3001",
     'http://localhost:3000',
     'https://two025-tabinosuke-dev.onrender.com',
 ]
