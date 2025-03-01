@@ -103,7 +103,7 @@ export default function ConfirmPage() {
   // シェアボタンがクリックされたとき、URL をクリップボードにコピー
   const handleShareClick = () => {
     if (!uuid) return;
-    const shareUrl = `https://tabinosuke-app-test.vercel.app/confirm?uuid=${uuid}/`;
+    const shareUrl = `https://tabinosuke-app-demo.vercel.app/confirm?uuid=${uuid}/`;
     navigator.clipboard
       .writeText(shareUrl)
       .then(() => {

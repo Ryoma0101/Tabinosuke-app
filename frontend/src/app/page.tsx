@@ -18,7 +18,7 @@ export default function Home() {
             入力画面へ（デモ用）
           </Link>
           <Link
-            href="/confirm"
+            href="https://tabinosuke-app-demo.vercel.app/confirm"
             className="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 text-center transition-colors"
           >
             確認画面へ（デモ用）
