@@ -21,7 +21,7 @@ COPY . /TABINOSUKE-APP/
 HEALTHCHECK --interval=10s --timeout=5s --retries=10 CMD pg_isready -U ${DB_USER} -h postgres || exit 1
 
 # デフォルトのコマンド
-CMD ["bash", "-c", "python manage.py makemigrations myapi && python manage.py migrate && python manage.py createsuperuser --noinput && python manage.py runserver 0.0.0.0:8000"]
+CMD ["bash", "-c", "python manage.py makemigrations myapi && python manage.py migrate && python manage.py init_data && python manage.py runserver 0.0.0.0:8000"]
 
 # ポートの設定
 EXPOSE 8000
