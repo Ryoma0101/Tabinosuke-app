@@ -308,29 +308,25 @@ class ScheduleAdjustByIdView(APIView):
             if delay.total_seconds() <= 0:
                 return Response({"id": travel_plan.id}, status=status.HTTP_200_OK)
 
-            # passed_index以降のviaPointsを取得
-            remaining_points = [p for p in schedule["via_points"] if p.index > passed_index]
+            # すべてのvia_pointsを取得
+            all_points = schedule["via_points"]
 
-            # Adjust arrival time of the first point after the current time
-            first_point = remaining_points[0]
-            first_point.arrival_datetime = now_time
-
-            # Calculate new departure times by compressing stay durations
-            for i, point in enumerate(remaining_points):
+            # すべてのポイントの滞在時間を30%短縮
+            for i, point in enumerate(all_points):
                 if i == 0:
-                    continue  # Skip the first point as its arrival is already adjusted
+                    continue  # 最初のポイントはスキップ
 
-                previous_point = remaining_points[i - 1]
+                previous_point = all_points[i - 1]
                 travel_time = point.arrival_datetime - previous_point.departure_datetime
                 max_stay_duration = point.departure_datetime - point.arrival_datetime
-                compressed_stay_duration = max_stay_duration * 0.7  # Compress stay duration by 30%
+                compressed_stay_duration = max_stay_duration * 0.7  # 常に30%短縮
 
-                # Update arrival and departure times
+                # 到着時間と出発時間を更新
                 point.arrival_datetime = previous_point.departure_datetime + travel_time
                 point.departure_datetime = point.arrival_datetime + compressed_stay_duration
 
-            # Save the updated schedule
-            for vp_data in remaining_points:
+            # 更新されたスケジュールを保存
+            for vp_data in all_points:
                 vp_instance = get_object_or_404(ViaPoint, id=vp_data.id)
                 vp_instance.arrival_datetime = vp_data.arrival_datetime
                 vp_instance.departure_datetime = vp_data.departure_datetime
