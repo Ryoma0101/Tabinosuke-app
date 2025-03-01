@@ -53,8 +53,13 @@ const Card: React.FC = () => {
       <div>
         <DestinationCard />
       </div>
-      <div className="flex justify-center">
+      <div className="flex flex-col justify-center items-center">
         <Button className="w-[136px] bg-[#3f3f46]">作成する</Button>
+        <p>※まだ作成できません。</p>
+        <div className="h-10" />
+        <Button className="w-[136px] bg-[#3f3f46]" onClick={() => window.location.href = '/'}>
+          最初のページに戻る
+        </Button>
       </div>
     </ul>
   );
