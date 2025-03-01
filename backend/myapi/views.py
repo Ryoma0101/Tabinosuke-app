@@ -285,28 +285,6 @@ class ScheduleAdjustByIdView(APIView):
             schedule = travel_plan_data
             via_points = ViaPoint.objects.filter(plan=travel_plan).all()
             schedule["via_points"] = list(via_points)
-            passed_index = request.data.get('passed_index', 0)
-            now_time_str = request.data.get('now_time')
-            not_passed_index = passed_index + 1
-
-            # now_timeをdatetimeに変換
-            try:
-                now_time = datetime.fromisoformat(now_time_str)
-            except (TypeError, ValueError):
-                return Response({"error": "Invalid now_time format"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # locate_returnが見つからない場合の処理を追加
-            locate_return = next((vp for vp in schedule["via_points"] if vp.index == not_passed_index), None)
-            if not locate_return:
-                return Response({"error": "Invalid index for locate_return"}, status=status.HTTP_400_BAD_REQUEST)
-
-            # arrival_datetimeをdatetimeに変換
-            arrival_datetime = locate_return.arrival_datetime
-
-            # Calculate delay
-            delay = now_time - arrival_datetime
-            if delay.total_seconds() <= 0:
-                return Response({"id": travel_plan.id}, status=status.HTTP_200_OK)
 
             # すべてのvia_pointsを取得
             all_points = schedule["via_points"]
