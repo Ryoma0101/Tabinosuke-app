@@ -114,12 +114,12 @@ const Card: React.FC = () => {
         {ViaList.map((_, index) => (
           <ViaCard
             key={index}
-            place={plan.vias[index].place}
-            arrivalDate={plan.vias[index].arrivalDate}
-            arrivalTime={plan.vias[index].arrivalTime}
-            priority={plan.vias[index].priority}
-            departureDate={plan.vias[index].departureDate}
-            departureTime={plan.vias[index].departureTime}
+            place={plan.vias[index]?.place}
+            arrivalDate={plan.vias[index]?.arrivalDate}
+            arrivalTime={plan.vias[index]?.arrivalTime}
+            priority={plan.vias[index]?.priority}
+            departureDate={plan.vias[index]?.departureDate}
+            departureTime={plan.vias[index]?.departureTime}
             transport={transport}
             onTransportChange={handleTransportChange}
             onPlaceChange={(value) => handleViaChange(index, "place", value)}
