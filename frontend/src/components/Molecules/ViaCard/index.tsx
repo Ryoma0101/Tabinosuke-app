@@ -13,10 +13,40 @@ import {
 import TransportSelector from "../TransportSelector";
 
 interface ViaCardProps {
+  place: string;
+  arrivalDate?: Date;
+  arrivalTime: string;
+  priority: string;
+  departureDate?: Date;
+  departureTime: string;
+  transport: string | null;
+  onPlaceChange: (value: string) => void;
+  onArrivalDateChange: (value: Date | undefined) => void;
+  onArrivalTimeChange: (value: string) => void;
+  onPriorityChange: (value: string) => void;
+  onDepartureDateChange: (value: Date | undefined) => void;
+  onDepartureTimeChange: (value: string) => void;
+  onTransportChange: (transport: string) => void;
   onRemove: () => void;
 }
 
-const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
+const ViaCard: React.FC<ViaCardProps> = ({
+  place,
+  arrivalDate,
+  arrivalTime,
+  priority,
+  departureDate,
+  departureTime,
+  transport,
+  onPlaceChange,
+  onArrivalDateChange,
+  onArrivalTimeChange,
+  onPriorityChange,
+  onDepartureDateChange,
+  onDepartureTimeChange,
+  onTransportChange,
+  onRemove,
+}) => {
   const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
     event.currentTarget.showPicker();
   };
@@ -49,21 +79,30 @@ const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
         <p className="text-[#3F3F46] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           場所
         </p>
-        <PlaceInput />
+        <PlaceInput
+          value={place}
+          onChange={(e) => onPlaceChange(e.target.value)}
+          onPlaceSelect={(place) => onPlaceChange(place)}
+        />
       </div>
       <div className="mb-[16px]">
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           到着時間目安
         </p>
         <div className="flex space-x-4 mb-[16px]">
-          <DatePickerDemo />
+          <DatePickerDemo
+            selectedDate={arrivalDate}
+            onDateChange={onArrivalDateChange}
+          />
           <div className="relative flex items-center w-[102px] h-[43px]">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
               <Clock4 className="h-5 w-5 text-gray-400" />
             </span>
             <input
               type="time"
+              value={arrivalTime}
               onClick={handleClick}
+              onChange={(e) => onArrivalTimeChange(e.target.value)}
               className="pl-10 h-10 w-full rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-offset-2"
             />
             <style jsx>{`
@@ -81,7 +120,7 @@ const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           優先度
         </p>
-        <Select>
+        <Select value={priority} onValueChange={onPriorityChange}>
           <SelectTrigger className="w-[86px]">
             <SelectValue placeholder="ー" />
           </SelectTrigger>
@@ -97,14 +136,19 @@ const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
           出発時間目安
         </p>
         <div className="flex space-x-[16px] mb-10">
-          <DatePickerDemo />
+          <DatePickerDemo
+            selectedDate={departureDate}
+            onDateChange={onDepartureDateChange}
+          />
           <div className="relative flex items-center w-[102px] h-[43px]">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
               <Clock4 className="h-5 w-5 text-gray-400" />
             </span>
             <input
               type="time"
+              value={departureTime}
               onClick={handleClick}
+              onChange={(e) => onDepartureTimeChange(e.target.value)}
               className="pl-10 h-10 w-full rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-offset-2"
             />
             <style jsx>{`
@@ -118,7 +162,10 @@ const ViaCard: React.FC<ViaCardProps> = ({ onRemove }) => {
           </div>
         </div>
       </div>
-      <TransportSelector />
+      <TransportSelector
+        selectedTransport={transport}
+        onTransportChange={onTransportChange}
+      />
     </ul>
   );
 };

@@ -11,19 +11,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-interface DatePickerDemoProps {
-  value: string;
-  onSelectDatetime: (datetime: string) => void;
-}
+export function DatePickerDemo({
+  selectedDate,
+  onDateChange,
+}: {
+  selectedDate?: Date;
+  onDateChange: (date: Date | undefined) => void;
+}) {
+  const [date, setDate] = useState<Date | undefined>(selectedDate);
 
-export function DatePickerDemo({ value, onSelectDatetime }: DatePickerDemoProps) {
-  const [date, setDate] = useState<Date | undefined>(value ? new Date(value) : undefined);
-
-  const handleDateSelect = (selectedDate: Date | undefined) => {
-    setDate(selectedDate);
-    if (selectedDate) {
-      onSelectDatetime(selectedDate.toISOString().split("T")[0]);
-    }
+  const handleDateChange = (date: Date | undefined) => {
+    setDate(date);
+    onDateChange(date);
   };
 
   return (
@@ -44,7 +43,7 @@ export function DatePickerDemo({ value, onSelectDatetime }: DatePickerDemoProps)
         <Calendar
           mode="single"
           selected={date}
-          onSelect={handleDateSelect}
+          onSelect={handleDateChange}
           initialFocus
         />
       </PopoverContent>

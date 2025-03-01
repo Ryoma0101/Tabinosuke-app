@@ -8,8 +8,21 @@ const transportModes = [
   { id: "walk", src: "/icons/walk.svg", label: "walk" },
 ];
 
-export default function TransportSelector() {
-  const [selected, setSelected] = useState<string | null>(null);
+interface TransportSelectorProps {
+  selectedTransport: string | null;
+  onTransportChange: (transport: string) => void;
+}
+
+export default function TransportSelector({
+  selectedTransport,
+  onTransportChange,
+}: TransportSelectorProps) {
+  const [selected, setSelected] = useState<string | null>(selectedTransport);
+
+  const handleTransportChange = (transport: string) => {
+    setSelected(transport);
+    onTransportChange(transport);
+  };
 
   return (
     <div className="flex items-stretch font-sans h-auto gap-6">
@@ -20,7 +33,7 @@ export default function TransportSelector() {
           {transportModes.map((mode) => (
             <button
               key={mode.id}
-              onClick={() => setSelected(mode.id)}
+              onClick={() => handleTransportChange(mode.id)}
               className={`relative p-3 rounded-full transition ${
                 selected === mode.id ? "bg-[#16A34A]" : "hover:bg-green-100"
               }`}
