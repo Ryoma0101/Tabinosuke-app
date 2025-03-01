@@ -13,38 +13,38 @@ const initialVias: number[] = [];
 const Card: React.FC = () => {
   const [ViaList, setViaList] = useState(initialVias);
   const [plan, setPlan] = useState({
-    input: "",
-    departure: { place: "", date: undefined, time: "" },
-    vias: [
+    plan_name: "",
+    start_point: { location: "", date: undefined, travel_method_to_next: "", departure_datetime: undefined },
+    via_points: [
       {
-        place: "",
-        arrivalDate: undefined,
-        arrivalTime: "",
+        index: 0,
+        location: "",
+        arrival_datetime: undefined,
         priority: "",
-        departureDate: undefined,
-        departureTime: "",
+        departure_datetime: undefined,
+        travel_method_to_next: "",
       },
     ],
-    destination: { place: "", date: undefined, time: "" },
+    final_point: { location: "", date: undefined, arrival_datetime: "" },
   });
   const [transport, setTransport] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPlan({ ...plan, input: e.target.value });
+    setPlan({ ...plan, plan_name: e.target.value });
   };
 
   const handleDepartureChange = (field: string, value: any) => {
-    setPlan({ ...plan, departure: { ...plan.departure, [field]: value } });
+    setPlan({ ...plan, start_point: { ...plan.start_point, [field]: value } });
   };
 
   const handleViaChange = (index: number, field: string, value: any) => {
-    const updatedVias = [...plan.vias];
+    const updatedVias = [...plan.via_points];
     updatedVias[index] = { ...updatedVias[index], [field]: value };
-    setPlan({ ...plan, vias: updatedVias });
+    setPlan({ ...plan, via_points: updatedVias });
   };
 
   const handleDestinationChange = (field: string, value: any) => {
-    setPlan({ ...plan, destination: { ...plan.destination, [field]: value } });
+    setPlan({ ...plan, final_point: { ...plan.final_point, [field]: value } });
   };
 
   const handleTransportChange = (transport: string) => {
@@ -60,19 +60,24 @@ const Card: React.FC = () => {
       | "arrivalDate"
       | "arrivalTime"
       | "departureDate"
-      | "departureTime",
+      | "departureTime"
+      | "departure_datetime"
+      | "arrival_datetime",
     value: any
   ) => {
     if (type === "departure") {
-      setPlan({ ...plan, departure: { ...plan.departure, [field]: value } });
+      setPlan({
+        ...plan,
+        start_point: { ...plan.start_point, [field]: value },
+      });
     } else if (type === "via" && index !== null) {
-      const updatedVias = [...plan.vias];
+      const updatedVias = [...plan.via_points];
       updatedVias[index] = { ...updatedVias[index], [field]: value };
-      setPlan({ ...plan, vias: updatedVias });
+      setPlan({ ...plan, via_points: updatedVias });
     } else if (type === "destination") {
       setPlan({
         ...plan,
-        destination: { ...plan.destination, [field]: value },
+        final_point: { ...plan.final_point, [field]: value },
       });
     }
   };
@@ -90,19 +95,19 @@ const Card: React.FC = () => {
     <ul className="flex flex-col relative w-[326px] gap-[52px]">
       <div className="flex flex-col">
         <h2 className="mb-[16px]">プランを入力</h2>
-        <Input value={plan.input} onChange={handleInputChange} />
+        <Input value={plan.plan_name} onChange={handleInputChange} />
       </div>
       <div>
         <DepartureCard
-          place={plan.departure.place}
-          date={plan.departure.date}
-          time={plan.departure.time}
-          onPlaceChange={(value) => handleDepartureChange("place", value)}
+          place={plan.start_point.location}
+          date={plan.start_point.date}
+          time={plan.start_point.departure_datetime || ""}
+          onPlaceChange={(value) => handleDepartureChange("location", value)}
           onDateChange={(value) =>
             handleDateTimeChange("departure", null, "date", value)
           }
           onTimeChange={(value) =>
-            handleDateTimeChange("departure", null, "time", value)
+            handleDateTimeChange("departure", null, "departure_datetime", value)
           }
         />
       </div>
@@ -114,29 +119,29 @@ const Card: React.FC = () => {
         {ViaList.map((_, index) => (
           <ViaCard
             key={index}
-            place={plan.vias[index]?.place}
-            arrivalDate={plan.vias[index]?.arrivalDate}
-            arrivalTime={plan.vias[index]?.arrivalTime}
-            priority={plan.vias[index]?.priority}
-            departureDate={plan.vias[index]?.departureDate}
-            departureTime={plan.vias[index]?.departureTime}
+            place={plan.via_points[index]?.location}
+            arrivalDate={plan.via_points[index]?.arrival_datetime}
+            arrivalTime={plan.via_points[index]?.arrival_datetime || ""}
+            priority={plan.via_points[index]?.priority}
+            departureDate={plan.via_points[index]?.departure_datetime}
+            departureTime={plan.via_points[index]?.departure_datetime || ""}
             transport={transport}
             onTransportChange={handleTransportChange}
-            onPlaceChange={(value) => handleViaChange(index, "place", value)}
+            onPlaceChange={(value) => handleViaChange(index, "location", value)}
             onArrivalDateChange={(value) =>
-              handleDateTimeChange("via", index, "arrivalDate", value)
+              handleDateTimeChange("via", index, "arrival_datetime", value)
             }
             onArrivalTimeChange={(value) =>
-              handleDateTimeChange("via", index, "arrivalTime", value)
+              handleDateTimeChange("via", index, "arrival_datetime", value)
             }
             onPriorityChange={(value) =>
               handleViaChange(index, "priority", value)
             }
             onDepartureDateChange={(value) =>
-              handleDateTimeChange("via", index, "departureDate", value)
+              handleDateTimeChange("via", index, "departure_datetime", value)
             }
             onDepartureTimeChange={(value) =>
-              handleDateTimeChange("via", index, "departureTime", value)
+              handleDateTimeChange("via", index, "departure_datetime", value)
             }
             onRemove={() => onRemoveTaskButtonClick(index)}
           />
@@ -145,15 +150,15 @@ const Card: React.FC = () => {
       </div>
       <div>
         <DestinationCard
-          place={plan.destination.place}
-          date={plan.destination.date}
-          time={plan.destination.time}
-          onPlaceChange={(value) => handleDestinationChange("place", value)}
+          place={plan.final_point.location}
+          date={plan.final_point.date}
+          time={plan.final_point.arrival_datetime}
+          onPlaceChange={(value) => handleDestinationChange("location", value)}
           onDateChange={(value) =>
             handleDateTimeChange("destination", null, "date", value)
           }
           onTimeChange={(value) =>
-            handleDateTimeChange("destination", null, "time", value)
+            handleDateTimeChange("destination", null, "arrival_datetime", value)
           }
         />
       </div>
