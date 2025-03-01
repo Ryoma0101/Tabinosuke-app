@@ -86,50 +86,6 @@ const Card: React.FC = () => {
     setViaList([...ViaList, ViaList.length + 1]);
   };
 
-  const handleSubmit = async () => {
-    const payload = {
-      plan_name: plan.input,
-      start_point: {
-        location: plan.departure.place,
-        departure_datetime: plan.departure.date,
-        travel_method_to_next: transport,
-      },
-      via_points: plan.vias.map((via, index) => ({
-        index: index + 1,
-        location: via.place,
-        arrival_datetime: via.arrivalDate,
-        priority: via.priority,
-        departure_datetime: via.departureDate,
-        travel_method_to_next: transport,
-      })),
-      final_point: {
-        location: plan.destination.place,
-      },
-    };
-
-    try {
-      const response = await fetch(
-        "https://two025-tabinosuke-dev.onrender.com/api/save/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to save plan");
-      }
-
-      alert("プランが保存されました");
-    } catch (error) {
-      console.error("Error saving plan:", error);
-      alert("プランの保存に失敗しました");
-    }
-  };
-
   return (
     <ul className="flex flex-col relative w-[326px] gap-[52px]">
       <div className="flex flex-col">
@@ -201,11 +157,7 @@ const Card: React.FC = () => {
           }
         />
       </div>
-      <div className="flex justify-center">
-        <Button className="w-[136px] bg-[#3f3f46]" onClick={handleSubmit}>
-          作成する
-        </Button>
-      </div>
+      <Button className="w-[136px] bg-[#3f3f46]">作成する</Button>
     </ul>
   );
 };
