@@ -104,7 +104,6 @@ const Card: React.FC = () => {
       })),
       final_point: {
         location: plan.destination.place,
-        z,
       },
     };
 
