@@ -191,7 +191,7 @@ export default function ConfirmPage() {
       }
       const result = await response.json();
       const newId = result.id;
-      window.location.href = `http://localhost:3001/confirm?uuid=${newId}`;
+      window.location.href = `https://tabinosuke-app-dev-2025.vercel.app/confirm?uuid=${newId}`;
     } catch (error) {
       console.error("POST schedule-adjust エラー:", error);
       setError("スケジュールの調整に失敗しました。");
