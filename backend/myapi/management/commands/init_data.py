@@ -29,10 +29,10 @@ class Command(BaseCommand):
         )
 
         via_points_data = [
-            {"id": uuid.UUID('11111111-1111-1111-1111-111111111111'), "index": 1, "location": "ユニーク1", "arrival_datetime": "2025-03-01T13:00:00", "priority": "高", "departure_datetime": "2025-03-01T20:00:00", "travel_method_to_next": "徒歩"},
-            {"id": uuid.UUID('22222222-2222-2222-2222-222222222222'), "index": 2, "location": "ユニーク2", "arrival_datetime": "2025-03-01T21:00:00", "priority": "中", "departure_datetime": "2025-03-01T22:00:00", "travel_method_to_next": "公共交通機関"},
-            {"id": uuid.UUID('33333333-3333-3333-3333-333333333333'), "index": 3, "location": "ユニーク3", "arrival_datetime": "2025-03-01T23:00:00", "priority": "中", "departure_datetime": "2025-03-02T00:00:00", "travel_method_to_next": "公共交通機関"},
-            {"id": uuid.UUID('44444444-4444-4444-4444-444444444444'), "index": 4, "location": "ユニーク4", "arrival_datetime": "2025-03-02T15:00:00", "priority": "低", "departure_datetime": "2025-03-02T17:00:00", "travel_method_to_next": "自転車"}
+            {"id": uuid.UUID('11111111-1111-1111-1111-111111111111'), "index": 1, "location": "ユニーク1", "arrival_datetime": "2025-03-01T13:25:00", "priority": "高", "departure_datetime": "2025-03-01T20:43:00", "travel_method_to_next": "徒歩"},
+            {"id": uuid.UUID('22222222-2222-2222-2222-222222222222'), "index": 2, "location": "ユニーク2", "arrival_datetime": "2025-03-01T21:43:00", "priority": "中", "departure_datetime": "2025-03-01T22:44:00", "travel_method_to_next": "公共交通機関"},
+            {"id": uuid.UUID('33333333-3333-3333-3333-333333333333'), "index": 3, "location": "ユニーク3", "arrival_datetime": "2025-03-01T23:00:00", "priority": "中", "departure_datetime": "2025-03-02T00:10:00", "travel_method_to_next": "公共交通機関"},
+            {"id": uuid.UUID('44444444-4444-4444-4444-444444444444'), "index": 4, "location": "ユニーク4", "arrival_datetime": "2025-03-02T15:32:00", "priority": "低", "departure_datetime": "2025-03-02T17:12:00", "travel_method_to_next": "自転車"}
         ]
 
         for via_point_data in via_points_data:
