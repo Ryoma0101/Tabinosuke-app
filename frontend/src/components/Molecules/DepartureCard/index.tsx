@@ -1,27 +1,19 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { PlaceInput } from "@/components/ui/placeinput";
 import { DatePickerDemo } from "@/components/ui/DatePicker";
 import { Clock4 } from "lucide-react";
 
-interface DepartureCardProps {
-  departure_datetime: string | null;
-  location: string | null;
-  onSelectPlace: (place: string) => void;
-  onSelectDatetime: (datetime: string) => void;
-}
+const DepartureCard: React.FC = () => {
+  const [departure_datetime, setDepartureDatetime] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
 
-const DepartureCard: React.FC<DepartureCardProps> = ({
-  departure_datetime,
-  onSelectPlace,
-  onSelectDatetime,
-}) => {
   const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
     event.currentTarget.showPicker();
   };
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onSelectDatetime(e.target.value);
+    setDepartureDatetime(e.target.value);
   };
 
   return (
@@ -36,7 +28,7 @@ const DepartureCard: React.FC<DepartureCardProps> = ({
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
           場所
         </p>
-        <PlaceInput onSelect={onSelectPlace} />
+        <PlaceInput />
       </div>
       <div>
         <p className="text-[var(--text-border-default,#3F3F46)] font-noto text-[16px] font-normal leading-normal mb-[12px]">
@@ -44,8 +36,8 @@ const DepartureCard: React.FC<DepartureCardProps> = ({
         </p>
         <div className="flex space-x-[16px]">
           <DatePickerDemo
-            value={departure_datetime || ""}
-            onSelectDatetime={onSelectDatetime}
+            value={departure_datetime}
+            onSelectDatetime={setDepartureDatetime}
           />
           <div className="relative flex items-center w-[102px] h-[43px]">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -53,7 +45,7 @@ const DepartureCard: React.FC<DepartureCardProps> = ({
             </span>
             <input
               type="time"
-              value={departure_datetime || ""}
+              value={departure_datetime}
               onChange={handleTimeChange}
               onClick={handleClick}
               className="w-[102px] h-[43px] pl-10 h-10 w-full rounded-md border border-input bg-background text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-offset-2"

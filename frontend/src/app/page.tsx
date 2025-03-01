@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 
 export default function Home() {
@@ -15,17 +16,17 @@ export default function Home() {
             href="/input"
             className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-center transition-colors"
           >
-            入力画面へ（テスト用）
+            入力画面へ（デモ用）
           </Link>
           <Link
-            href="/confirm"
+            href="https://tabinosuke-app-demo.vercel.app/confirm"
             className="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 text-center transition-colors"
           >
-            確認画面へ（テスト用）
+            確認画面へ（デモ用）
           </Link>
         </div>
         <p className="text-sm text-gray-500 text-center mt-6">
-          ※これはテスト環境です。
+          ※これはテストです。
         </p>
       </div>
     </main>

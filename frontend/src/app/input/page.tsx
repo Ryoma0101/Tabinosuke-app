@@ -1,3 +1,4 @@
+`use client`;
 import React from "react";
 import Header from "@/components/Atoms/Header";
 import Card from "@/components/Organisms/Card";
